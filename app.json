@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Brain Box",
+    "slug": "BrainBox",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#EDE7F6",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.brainbox.games"
+    },
+    "android": {
+      "package": "com.brainbox.games",
+      "adaptiveIcon": {
+        "backgroundColor": "#EDE7F6",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
