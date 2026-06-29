@@ -28,6 +28,9 @@
         "projectId": "eeb5560b-1360-45da-ad10-1937f73953ce"
       }
     },
-    "owner": "spicearcstudio"
+    "owner": "spicearcstudio",
+    "plugins": [
+      "expo-audio"
+    ]
   }
 }

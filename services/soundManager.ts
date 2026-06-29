@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { createAudioPlayer, AudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { loadData, saveData } from './storage';
 
@@ -13,6 +13,8 @@ const SOUND_FILES: Record<SoundName, any> = {
   drop: require('../assets/sounds/drop.wav'),
 };
 
+const players: Map<SoundName, AudioPlayer> = new Map();
+
 let soundEnabled = true;
 let hapticEnabled = true;
 let loaded = false;
@@ -20,9 +22,6 @@ let loaded = false;
 export async function initSound() {
   if (loaded) return;
   loaded = true;
-  try {
-    await Audio.setAudioModeAsync({ playsInSilentModeIOS: true, staysActiveInBackground: false });
-  } catch { /* web fallback */ }
   const sVal = await loadData('soundEnabled');
   const hVal = await loadData('hapticEnabled');
   if (sVal !== null) soundEnabled = sVal === 'true';
@@ -45,14 +44,16 @@ export async function setHapticEnabled(val: boolean) {
 export async function playSound(name: SoundName) {
   if (!soundEnabled) return;
   try {
-    const { sound } = await Audio.Sound.createAsync(SOUND_FILES[name]);
-    await sound.playAsync();
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if ('didJustFinish' in status && status.didJustFinish) {
-        sound.unloadAsync();
-      }
-    });
-  } catch { /* ignore on unsupported platforms */ }
+    let player = players.get(name);
+    if (!player) {
+      player = createAudioPlayer(SOUND_FILES[name]);
+      players.set(name, player);
+    }
+    player.seekTo(0);
+    player.play();
+  } catch {
+    // Silently fail if audio not available
+  }
 }
 
 export function haptic(style: 'light' | 'medium' | 'heavy' = 'light') {
