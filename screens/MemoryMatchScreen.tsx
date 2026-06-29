@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
-import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context/ThemeContext';
 import { DifficultyOption } from '../constants/games';
 import { MemoryState, createInitialState, flipCard, resetFlipped } from '../logic/memory/gameEngine';
@@ -8,10 +7,11 @@ import Board from '../components/memory/Board';
 import GameHeader from '../components/shared/GameHeader';
 import GameOverModal from '../components/shared/GameOverModal';
 import AdBanner from '../components/shared/AdBanner';
+import { playSound, haptic } from '../services/soundManager';
 
-interface Props { diff: DifficultyOption; onHome: () => void }
+interface Props { diff: DifficultyOption; onHome: () => void; isDaily?: boolean }
 
-export default function MemoryMatchScreen({ diff, onHome }: Props) {
+export default function MemoryMatchScreen({ diff, onHome, isDaily }: Props) {
   const { theme: t } = useTheme();
   const rows = diff.gridSize;
   const cols = diff.gridCols ?? 4;
@@ -25,9 +25,15 @@ export default function MemoryMatchScreen({ diff, onHome }: Props) {
   }, [state.busy]);
 
   const handleFlip = useCallback((idx: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setState(prev => flipCard(prev, idx));
-  }, []);
+    haptic('light');
+    const next = flipCard(state, idx);
+    if (next.matched[idx]) {
+      playSound('match');
+    } else {
+      playSound('tap');
+    }
+    setState(next);
+  }, [state]);
 
   const restart = () => setState(createInitialState(rows, cols));
   const matched = state.matched.filter(Boolean).length / 2;
@@ -51,7 +57,9 @@ export default function MemoryMatchScreen({ diff, onHome }: Props) {
       </View>
       <AdBanner />
       <GameOverModal visible={state.gameOver} title="Well Done!" subtitle={`Matched in ${state.turns} turns`}
-        titleColor={t.accent} gameName="Memory Match" onPlayAgain={restart} onHome={onHome} />
+        titleColor={t.accent} gameName="Memory Match" gameId="memory" result="win"
+        extraStats={{ turns: state.turns }} isDaily={isDaily}
+        onPlayAgain={isDaily ? onHome : restart} onHome={onHome} />
     </SafeAreaView>
   );
 }

@@ -1,14 +1,34 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet, SafeAreaView, Alert, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet, SafeAreaView, Alert, Platform, Switch } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
 import { ALL_THEMES } from '../constants/colors';
+import { isSoundEnabled, setSoundEnabled, isHapticEnabled, setHapticEnabled, initSound } from '../services/soundManager';
 
 interface Props { onBack: () => void }
 
 export default function SettingsScreen({ onBack }: Props) {
   const { theme: t, themeId, setThemeId } = useTheme();
   const { isPremium, purchase, restore } = usePremium();
+  const [sound, setSound] = useState(true);
+  const [haptic, setHaptic] = useState(true);
+
+  useEffect(() => {
+    initSound().then(() => {
+      setSound(isSoundEnabled());
+      setHaptic(isHapticEnabled());
+    });
+  }, []);
+
+  const toggleSound = (val: boolean) => {
+    setSound(val);
+    setSoundEnabled(val);
+  };
+
+  const toggleHaptic = (val: boolean) => {
+    setHaptic(val);
+    setHapticEnabled(val);
+  };
 
   const handlePurchase = async () => {
     await purchase();
@@ -36,6 +56,19 @@ export default function SettingsScreen({ onBack }: Props) {
             <Pressable onPress={restore}><Text style={[styles.restoreText, { color: t.textSec }]}>Restore purchase</Text></Pressable>
           </View>
         )}
+
+        <Text style={[styles.sectionLabel, { color: t.textSec }]}>SOUND & FEEDBACK</Text>
+        <View style={[styles.toggleCard, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+          <View style={styles.toggleRow}>
+            <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDD0A'} Sound Effects</Text>
+            <Switch value={sound} onValueChange={toggleSound} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
+          </View>
+          <View style={[styles.divider, { backgroundColor: t.cardBorder }]} />
+          <View style={styles.toggleRow}>
+            <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDCF3'} Haptic Feedback</Text>
+            <Switch value={haptic} onValueChange={toggleHaptic} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
+          </View>
+        </View>
 
         <Text style={[styles.sectionLabel, { color: t.textSec }]}>THEME</Text>
         <View style={styles.themeRow}>
@@ -84,6 +117,10 @@ const styles = StyleSheet.create({
   premBtnText: { fontSize: 16, fontWeight: '800', color: '#fff' },
   restoreText: { fontSize: 13, marginTop: 12, textDecorationLine: 'underline' },
   sectionLabel: { fontSize: 11, fontWeight: '800', letterSpacing: 3, marginBottom: 12 },
+  toggleCard: { borderRadius: 16, borderWidth: 1.5, marginBottom: 24, overflow: 'hidden' },
+  toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 },
+  toggleLabel: { fontSize: 15, fontWeight: '600' },
+  divider: { height: 1 },
   themeRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', marginBottom: 24 },
   themeBtn: { paddingVertical: 16, paddingHorizontal: 20, borderRadius: 16, alignItems: 'center', minWidth: 80 },
   themeName: { fontSize: 14, fontWeight: '700' },

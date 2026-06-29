@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
-import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context/ThemeContext';
 import { DifficultyOption } from '../constants/games';
 import { FloodState, createInitialState, makeMove } from '../logic/colorflood/gameEngine';
@@ -8,18 +7,20 @@ import Board from '../components/colorflood/Board';
 import GameHeader from '../components/shared/GameHeader';
 import GameOverModal from '../components/shared/GameOverModal';
 import AdBanner from '../components/shared/AdBanner';
+import { playSound, haptic } from '../services/soundManager';
 
-const MAX_MOVES: Record<string, number> = { easy: 20, medium: 24, hard: 30 };
+const MAX_MOVES: Record<string, number> = { easy: 20, medium: 24, hard: 30, daily: 24 };
 
-interface Props { diff: DifficultyOption; onHome: () => void }
+interface Props { diff: DifficultyOption; onHome: () => void; isDaily?: boolean }
 
-export default function ColorFloodScreen({ diff, onHome }: Props) {
+export default function ColorFloodScreen({ diff, onHome, isDaily }: Props) {
   const { theme: t } = useTheme();
   const maxM = MAX_MOVES[diff.key] ?? 24;
   const [state, setState] = useState<FloodState>(() => createInitialState(diff.gridSize, maxM));
 
   const handlePick = useCallback((colorIdx: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    haptic('light');
+    playSound('tap');
     setState(prev => makeMove(prev, colorIdx));
   }, []);
 
@@ -42,7 +43,9 @@ export default function ColorFloodScreen({ diff, onHome }: Props) {
         title={state.won ? 'Flooded!' : 'Out of Moves!'}
         subtitle={state.won ? `Cleared in ${state.moves} moves` : 'Try again'}
         titleColor={state.won ? t.accent : t.ai}
-        gameName="Color Flood" onPlayAgain={restart} onHome={onHome} />
+        gameName="Color Flood" gameId="colorflood" result={state.won ? 'win' : 'lose'}
+        extraStats={{ score: state.won ? maxM - state.moves : undefined }}
+        isDaily={isDaily} onPlayAgain={isDaily ? onHome : restart} onHome={onHome} />
     </SafeAreaView>
   );
 }

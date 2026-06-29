@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { PremiumProvider } from './context/PremiumContext';
 import { GameId, getGameById, DifficultyOption } from './constants/games';
+import { initSound } from './services/soundManager';
+import { markDailyChallengeCompleted } from './services/dailyChallenge';
 import HomeScreen from './screens/HomeScreen';
 import GamePickerScreen from './screens/GamePickerScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import StatsScreen from './screens/StatsScreen';
+import DailyChallengeScreen from './screens/DailyChallengeScreen';
 import DotsAndBoxesScreen from './screens/DotsAndBoxesScreen';
 import TicTacToeScreen from './screens/TicTacToeScreen';
 import ConnectFourScreen from './screens/ConnectFourScreen';
@@ -15,12 +19,16 @@ import ColorFloodScreen from './screens/ColorFloodScreen';
 type Screen =
   | { type: 'home' }
   | { type: 'picker'; gameId: GameId }
-  | { type: 'game'; gameId: GameId; diff: DifficultyOption }
-  | { type: 'settings' };
+  | { type: 'game'; gameId: GameId; diff: DifficultyOption; twoPlayer: boolean; isDaily: boolean }
+  | { type: 'settings' }
+  | { type: 'stats' }
+  | { type: 'daily' };
 
 function Navigator() {
   const { theme } = useTheme();
   const [screen, setScreen] = useState<Screen>({ type: 'home' });
+
+  useEffect(() => { initSound(); }, []);
 
   const goHome = () => setScreen({ type: 'home' });
 
@@ -28,25 +36,42 @@ function Navigator() {
     return <SettingsScreen onBack={goHome} />;
   }
 
+  if (screen.type === 'stats') {
+    return <StatsScreen onBack={goHome} />;
+  }
+
+  if (screen.type === 'daily') {
+    return (
+      <DailyChallengeScreen
+        onPlay={(gameId, diff, isDaily) => setScreen({ type: 'game', gameId: gameId as GameId, diff, twoPlayer: false, isDaily })}
+        onBack={goHome}
+      />
+    );
+  }
+
   if (screen.type === 'picker') {
     const game = getGameById(screen.gameId);
     return (
       <GamePickerScreen
         game={game}
-        onPlay={(diff) => setScreen({ type: 'game', gameId: screen.gameId, diff })}
+        onPlay={(diff, twoPlayer) => setScreen({ type: 'game', gameId: screen.gameId, diff, twoPlayer, isDaily: false })}
         onBack={goHome}
       />
     );
   }
 
   if (screen.type === 'game') {
-    const props = { diff: screen.diff, onHome: goHome };
+    const handleHome = () => {
+      if (screen.isDaily) markDailyChallengeCompleted();
+      goHome();
+    };
+    const props = { diff: screen.diff, onHome: handleHome, twoPlayer: screen.twoPlayer, isDaily: screen.isDaily };
     switch (screen.gameId) {
       case 'dotsandboxes': return <DotsAndBoxesScreen {...props} />;
       case 'tictactoe':    return <TicTacToeScreen {...props} />;
       case 'connectfour':  return <ConnectFourScreen {...props} />;
-      case 'memory':       return <MemoryMatchScreen {...props} />;
-      case 'colorflood':   return <ColorFloodScreen {...props} />;
+      case 'memory':       return <MemoryMatchScreen diff={screen.diff} onHome={handleHome} isDaily={screen.isDaily} />;
+      case 'colorflood':   return <ColorFloodScreen diff={screen.diff} onHome={handleHome} isDaily={screen.isDaily} />;
     }
   }
 
@@ -54,6 +79,8 @@ function Navigator() {
     <HomeScreen
       onSelectGame={(id) => setScreen({ type: 'picker', gameId: id })}
       onSettings={() => setScreen({ type: 'settings' })}
+      onStats={() => setScreen({ type: 'stats' })}
+      onDaily={() => setScreen({ type: 'daily' })}
     />
   );
 }
