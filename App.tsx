@@ -19,6 +19,8 @@ import TicTacToeScreen from './screens/TicTacToeScreen';
 import ConnectFourScreen from './screens/ConnectFourScreen';
 import MemoryMatchScreen from './screens/MemoryMatchScreen';
 import ColorFloodScreen from './screens/ColorFloodScreen';
+import ReversiScreen from './screens/ReversiScreen';
+import Twenty48Screen from './screens/Twenty48Screen';
 
 type Screen =
   | { type: 'home' }
@@ -95,6 +97,8 @@ function Navigator() {
       case 'connectfour':  return <ConnectFourScreen {...props} />;
       case 'memory':       return <MemoryMatchScreen diff={screen.diff} onHome={handleHome} isDaily={screen.isDaily} />;
       case 'colorflood':   return <ColorFloodScreen diff={screen.diff} onHome={handleHome} isDaily={screen.isDaily} />;
+      case 'reversi':      return <ReversiScreen {...props} />;
+      case 'twenty48':     return <Twenty48Screen diff={screen.diff} onHome={handleHome} isDaily={screen.isDaily} />;
     }
   }
 

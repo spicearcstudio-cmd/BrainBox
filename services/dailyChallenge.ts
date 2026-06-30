@@ -41,6 +41,8 @@ const GAME_NAMES: Record<GameId, string> = {
   connectfour: 'Connect Four',
   memory: 'Memory Match',
   colorflood: 'Color Flood',
+  reversi: 'Reversi',
+  twenty48: '2048',
 };
 
 export function getDailyChallenge(): DailyChallenge {

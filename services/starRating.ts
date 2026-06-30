@@ -33,6 +33,15 @@ export function calculateStars(
       if (!extra?.movesLeft) return extra?.movesLeft === 0 ? 1 : 2;
       return extra.movesLeft >= 5 ? 3 : extra.movesLeft >= 2 ? 2 : 1;
     }
+    case 'reversi': {
+      if (!extra?.score || !extra?.opponentScore) return 2;
+      const margin = extra.score - extra.opponentScore;
+      return margin >= 20 ? 3 : margin >= 8 ? 2 : 1;
+    }
+    case 'twenty48': {
+      if (!extra?.score) return 1;
+      return extra.score >= 20000 ? 3 : extra.score >= 5000 ? 2 : 1;
+    }
     default:
       return 2;
   }

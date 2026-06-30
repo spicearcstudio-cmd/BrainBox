@@ -7,17 +7,17 @@ Brain Box: Strategy Games
 
 ## Short Description (80 chars max)
 ```
-5 classic brain games with AI, 2-player mode, daily challenges & parental controls
+7 classic brain games with AI, 2-player mode, daily challenges & level unlocks!
 ```
 
 ## Full Description (4000 chars max)
 ```
-🧠 Train your brain with 5 addictive classic strategy games — all in one app!
+🧠 Train your brain with 7 addictive classic strategy games — all in one app!
 
 Brain Box brings together the best classic puzzle and strategy games, beautifully designed with a cheerful modern interface. Play solo against a smart AI, challenge a friend on the same device, or take on a fresh Daily Challenge every day.
 
 ━━━━━━━━━━━━━━━━━━━━
-🎮 5 CLASSIC GAMES
+🎮 7 CLASSIC GAMES
 ━━━━━━━━━━━━━━━━━━━━
 
 ▪ DOTS & BOXES — Connect dots, claim boxes, outsmart the AI on grids from 4×4 to 7×7
@@ -25,12 +25,20 @@ Brain Box brings together the best classic puzzle and strategy games, beautifull
 ▪ CONNECT FOUR — Drop discs and line up four to win on boards up to 9×7
 ▪ MEMORY MATCH — Flip cards and find all matching pairs in the fewest turns
 ▪ COLOR FLOOD — Flood the entire board with one color before you run out of moves
+▪ REVERSI — 🔓 Unlocks at Level 25! Flip your opponent's pieces and dominate the board
+▪ 2048 — 🔓 Unlocks at Level 50! Slide, merge, and reach the legendary 2048 tile
 
 ━━━━━━━━━━━━━━━━━━━━
 ⭐ KEY FEATURES
 ━━━━━━━━━━━━━━━━━━━━
 
 🤖 SMART AI OPPONENTS — Multiple difficulty levels that adapt to every board size. From casual to ruthless — find your perfect challenge.
+
+🔓 UNLOCKABLE GAMES — Earn XP, level up, and unlock 2 bonus games! Reversi at Level 25 and the legendary 2048 at Level 50. Every game you play brings you closer.
+
+⭐ XP & LEVELING — Progress from Newbie to Brain God across 52 levels. Every game earns XP — even losses! Star ratings reward perfection.
+
+🏅 18 ACHIEVEMENTS — Unlock badges for milestones, streaks, and mastery. How many can you collect?
 
 👥 2-PLAYER MODE — Pass and play on the same device. Perfect for road trips, waiting rooms, or game night with friends and family.
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, SafeAreaView, ScrollView, Platform } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
-import { GAMES, GameId } from '../constants/games';
+import { GAMES, GameId, GameInfo } from '../constants/games';
 import { getDailyChallenge, isDailyChallengeCompleted, getDailyStreak } from '../services/dailyChallenge';
 import { getParentalState } from '../services/parentalControl';
 import { getProgression, ProgressionState } from '../services/progressionManager';
@@ -122,22 +122,36 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
         </Pressable>
 
         <View style={styles.grid}>
-          {GAMES.map(game => (
-            <Pressable
-              key={game.id}
-              onPress={() => onSelectGame(game.id)}
-              style={({ pressed }) => [
-                styles.card,
-                { backgroundColor: t.card, borderColor: t.cardBorder, transform: [{ scale: pressed ? 0.96 : 1 }] },
-              ]}
-            >
-              <View style={[styles.iconWrap, { backgroundColor: game.color + '18' }]}>
-                <Text style={[styles.icon, { color: game.color }]}>{game.icon}</Text>
-              </View>
-              <Text style={[styles.gameName, { color: t.text }]}>{game.name}</Text>
-              <Text style={[styles.gameDesc, { color: t.textSec }]}>{game.description}</Text>
-            </Pressable>
-          ))}
+          {GAMES.map(game => {
+            const locked = game.unlockLevel != null && (progression?.level ?? 1) < game.unlockLevel;
+            return (
+              <Pressable
+                key={game.id}
+                onPress={() => {
+                  if (locked) {
+                    return; // Don't navigate
+                  }
+                  onSelectGame(game.id);
+                }}
+                style={({ pressed }) => [
+                  styles.card,
+                  { backgroundColor: t.card, borderColor: locked ? t.gold : t.cardBorder, transform: [{ scale: pressed && !locked ? 0.96 : 1 }] },
+                ]}
+              >
+                {locked && (
+                  <View style={styles.lockOverlay}>
+                    <Text style={styles.lockEmoji}>{'\uD83D\uDD12'}</Text>
+                    <Text style={[styles.lockLevel, { color: t.gold }]}>Level {game.unlockLevel}</Text>
+                  </View>
+                )}
+                <View style={[styles.iconWrap, { backgroundColor: game.color + '18', opacity: locked ? 0.3 : 1 }]}>
+                  <Text style={[styles.icon, { color: game.color }]}>{game.icon}</Text>
+                </View>
+                <Text style={[styles.gameName, { color: t.text, opacity: locked ? 0.4 : 1 }]}>{game.name}</Text>
+                <Text style={[styles.gameDesc, { color: t.textSec, opacity: locked ? 0.4 : 1 }]}>{game.description}</Text>
+              </Pressable>
+            );
+          })}
         </View>
       </ScrollView>
       </AnimatedScreen>
@@ -177,6 +191,9 @@ const styles = StyleSheet.create({
   icon: { fontSize: 26, fontWeight: '800' },
   gameName: { fontSize: 16, fontWeight: '800', marginBottom: 4 },
   gameDesc: { fontSize: 12, fontWeight: '500', lineHeight: 16 },
+  lockOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, justifyContent: 'center', alignItems: 'center', borderRadius: 20 },
+  lockEmoji: { fontSize: 28, marginBottom: 4 },
+  lockLevel: { fontSize: 12, fontWeight: '900', letterSpacing: 1 },
   limitBanner: { marginHorizontal: 16, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, alignItems: 'center', marginBottom: 8 },
   limitText: { fontSize: 13, fontWeight: '700' },
 });

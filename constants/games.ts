@@ -1,5 +1,5 @@
 export type Player = 'human' | 'ai';
-export type GameId = 'dotsandboxes' | 'tictactoe' | 'connectfour' | 'memory' | 'colorflood';
+export type GameId = 'dotsandboxes' | 'tictactoe' | 'connectfour' | 'memory' | 'colorflood' | 'reversi' | 'twenty48';
 
 export interface DifficultyOption {
   key: string;
@@ -18,6 +18,7 @@ export interface GameInfo {
   description: string;
   vsAI: boolean;
   difficulties: DifficultyOption[];
+  unlockLevel?: number;
 }
 
 export const GAMES: GameInfo[] = [
@@ -85,6 +86,34 @@ export const GAMES: GameInfo[] = [
       { key: 'easy', label: 'Easy', gridLabel: '8\u00D78', gridSize: 8, desc: '20 moves max' },
       { key: 'medium', label: 'Medium', gridLabel: '10\u00D710', gridSize: 10, desc: '24 moves max' },
       { key: 'hard', label: 'Hard', gridLabel: '14\u00D714', gridSize: 14, desc: '30 moves max' },
+    ],
+  },
+  {
+    id: 'reversi',
+    name: 'Reversi',
+    icon: '\u25D1',
+    color: '#43A047',
+    description: 'Flip & dominate the board',
+    vsAI: true,
+    unlockLevel: 25,
+    difficulties: [
+      { key: 'easy', label: 'Easy', gridLabel: '6\u00D76', gridSize: 6, desc: 'Small board, casual AI' },
+      { key: 'medium', label: 'Medium', gridLabel: '8\u00D78', gridSize: 8, desc: 'Classic board, smart AI' },
+      { key: 'hard', label: 'Hard', gridLabel: '8\u00D78', gridSize: 8, desc: 'Classic board, ruthless AI' },
+    ],
+  },
+  {
+    id: 'twenty48',
+    name: '2048',
+    icon: '\u00B2',
+    color: '#FF7043',
+    description: 'Slide, merge, reach 2048!',
+    vsAI: false,
+    unlockLevel: 50,
+    difficulties: [
+      { key: 'easy', label: 'Easy', gridLabel: '3\u00D73', gridSize: 3, desc: 'Small grid, quick rounds' },
+      { key: 'medium', label: 'Medium', gridLabel: '4\u00D74', gridSize: 4, desc: 'Classic 2048' },
+      { key: 'hard', label: 'Hard', gridLabel: '5\u00D75', gridSize: 5, desc: 'Huge grid, epic runs' },
     ],
   },
 ];

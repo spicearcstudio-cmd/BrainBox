@@ -43,6 +43,15 @@ const ALL_ACHIEVEMENTS: Achievement[] = [
   { id: 'fifty_games',     title: 'Committed',        description: 'Play 50 games total',                icon: '\uD83C\uDFAE', condition: d => d.totalGames >= 50 },
   { id: 'level_5',         title: 'Rising Star',      description: 'Reach Level 5',                      icon: '\u2B50', condition: d => d.level >= 5 },
   { id: 'level_10',        title: 'Elite',            description: 'Reach Level 10',                     icon: '\uD83D\uDC8E', condition: d => d.level >= 10 },
+  { id: 'level_25',        title: 'Reversi Master',   description: 'Reach Level 25 & unlock Reversi',    icon: '\u25D1', condition: d => d.level >= 25 },
+  { id: 'level_50',        title: '2048 Legend',      description: 'Reach Level 50 & unlock 2048',       icon: '\u00B2', condition: d => d.level >= 50 },
+  { id: 'two_hundred_wins', title: 'Unstoppable Force', description: 'Win 200 games',                    icon: '\uD83D\uDCAA', condition: d => d.totalWins >= 200 },
+  { id: 'all_seven',       title: 'Completionist',    description: 'Win at least once in all 7 games',   icon: '\uD83C\uDFC5',
+    condition: d => {
+      const ids: GameId[] = ['dotsandboxes', 'tictactoe', 'connectfour', 'memory', 'colorflood', 'reversi', 'twenty48'];
+      return ids.every(id => (d.gamesPerType[id]?.wins ?? 0) >= 1);
+    }
+  },
 ];
 
 let unlockedIds: Set<string> = new Set();
