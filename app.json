@@ -27,12 +27,7 @@
       "favicon": "./assets/favicon.png"
     },
     "updates": {
-      "url": "https://u.expo.dev/eeb5560b-1360-45da-ad10-1937f73953ce",
-      "enabled": false,
-      "checkAutomatically": "ON_ERROR_RECOVERY"
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
+      "enabled": false
     },
     "extra": {
       "eas": {
@@ -57,7 +52,6 @@
           "color": "#5C6BC0"
         }
       ],
-      "expo-updates",
       "expo-asset"
     ]
   }

@@ -1,0 +1,16 @@
+# Dev-only files
+__tests__/
+scripts/
+*.test.ts
+*.test.tsx
+jest.config.js
+build_log*.gz
+build_log*.txt
+fetch_log.ps1
+read_log.ps1
+STORE_LISTING.md
+README.md
+
+# Screenshots and store assets (not needed in app bundle)
+assets/screenshots/
+assets/feature-graphic.png
