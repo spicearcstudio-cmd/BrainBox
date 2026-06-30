@@ -66,13 +66,6 @@
         }
       ],
       [
-        "@sentry/react-native/expo",
-        {
-          "organization": "spicearc-studio",
-          "project": "brain-box"
-        }
-      ],
-      [
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-3940256099942544~3347511713",
@@ -80,8 +73,7 @@
         }
       ],
       "expo-updates",
-      "expo-asset",
-      "expo-splash-screen"
+      "expo-asset"
     ]
   }
 }

@@ -1,0 +1,6 @@
+$url = "https://storage.googleapis.com/eas-workflows-production/logs/eeb5560b-1360-45da-ad10-1937f73953ce/91dd8a6f-3118-40dd-9ed5-feac339bba64/2026-06-30T16%3A42%3A24Z-e14e2a5a-f9f7-4026-bde7-031c36dbd10b.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260630%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260630T164518Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=17a02e5a17f0554674b438aef9a78196923fb06cb8aaeb04d3ae3f32fd93b6c28c5ab978bc2255c4ed972c021d7e967abee04f32d43ff6531af6bee58e534133519cff8608b23293ab157dbae4e3170a64f1bbbf0687e91fec8134abfab5d1678a78d9c0d89f7d9e33b35db525fbdc51702670bc145f6e55d0c458889e20ac99a61bc66fda8c26bf6e676a8679646e7b7673f74cb4efb84a7150efef8930c7ec85d880f2a7f7eb646f2a073a52caeefdd01ddbf3295574fda7d5d685041252645b71fb54e0aec49483ca55605bd16c7dd00a4611582e03e1661dd20d40390dc9f7b12804ae181c95245d690f4de6eb707beccace9554b9c0d7ccd92514fd8d51"
+$outFile = "C:\Users\USER\Projects\DotsAndBoxes\build_log2.txt"
+Invoke-WebRequest -Uri $url -OutFile $outFile -UseBasicParsing
+$content = [System.IO.File]::ReadAllText($outFile)
+$lines = $content -split "`n"
+$lines[-200..-1] | ForEach-Object { $_ }
