@@ -7,11 +7,13 @@ import { GameId, getGameById, DifficultyOption } from './constants/games';
 import { initSound } from './services/soundManager';
 import { markDailyChallengeCompleted } from './services/dailyChallenge';
 import { getParentalState, recordGameForParental } from './services/parentalControl';
+import AchievementToast from './components/shared/AchievementToast';
 import HomeScreen from './screens/HomeScreen';
 import GamePickerScreen from './screens/GamePickerScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import StatsScreen from './screens/StatsScreen';
 import DailyChallengeScreen from './screens/DailyChallengeScreen';
+import AchievementsScreen from './screens/AchievementsScreen';
 import DotsAndBoxesScreen from './screens/DotsAndBoxesScreen';
 import TicTacToeScreen from './screens/TicTacToeScreen';
 import ConnectFourScreen from './screens/ConnectFourScreen';
@@ -24,7 +26,8 @@ type Screen =
   | { type: 'game'; gameId: GameId; diff: DifficultyOption; twoPlayer: boolean; isDaily: boolean }
   | { type: 'settings' }
   | { type: 'stats' }
-  | { type: 'daily' };
+  | { type: 'daily' }
+  | { type: 'achievements' };
 
 function Navigator() {
   const { theme } = useTheme();
@@ -54,6 +57,10 @@ function Navigator() {
 
   if (screen.type === 'stats') {
     return <StatsScreen onBack={goHome} />;
+  }
+
+  if (screen.type === 'achievements') {
+    return <AchievementsScreen onBack={goHome} />;
   }
 
   if (screen.type === 'daily') {
@@ -97,6 +104,7 @@ function Navigator() {
       onSettings={() => setScreen({ type: 'settings' })}
       onStats={() => setScreen({ type: 'stats' })}
       onDaily={() => setScreen({ type: 'daily' })}
+      onAchievements={() => setScreen({ type: 'achievements' })}
     />
   );
 }
@@ -107,6 +115,7 @@ export default function App() {
       <PremiumProvider>
         <StatusBar style="dark" />
         <Navigator />
+        <AchievementToast />
       </PremiumProvider>
     </ThemeProvider>
   );

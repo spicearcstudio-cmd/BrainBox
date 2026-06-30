@@ -3,28 +3,40 @@ import { View, Text, Pressable, StyleSheet, SafeAreaView, ScrollView, Platform }
 import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
 import { GAMES, GameId } from '../constants/games';
-import { getDailyChallenge, isDailyChallengeCompleted } from '../services/dailyChallenge';
+import { getDailyChallenge, isDailyChallengeCompleted, getDailyStreak } from '../services/dailyChallenge';
 import { getParentalState } from '../services/parentalControl';
+import { getProgression, ProgressionState } from '../services/progressionManager';
+import { getUnlockedCount } from '../services/achievementManager';
 import AnimatedScreen from '../components/shared/AnimatedScreen';
+import XPBar from '../components/shared/XPBar';
 
 interface Props {
   onSelectGame: (id: GameId) => void;
   onSettings: () => void;
   onStats: () => void;
   onDaily: () => void;
+  onAchievements: () => void;
 }
 
-export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily }: Props) {
+export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily, onAchievements }: Props) {
   const { theme: t } = useTheme();
   const { isPremium } = usePremium();
   const [dailyDone, setDailyDone] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [progression, setProgression] = useState<ProgressionState | null>(null);
+  const [achievementInfo, setAchievementInfo] = useState({ unlocked: 0, total: 0 });
+  const [dailyStreak, setDailyStreak] = useState(0);
   const daily = getDailyChallenge();
 
   useEffect(() => {
     isDailyChallengeCompleted().then(setDailyDone);
     getParentalState().then(s => { if (s.enabled) setRemaining(s.remaining); });
+    getProgression().then(setProgression);
+    getUnlockedCount().then(setAchievementInfo);
+    getDailyStreak().then(s => setDailyStreak(s.current));
   }, []);
+
+  const hoursLeft = 23 - new Date().getHours();
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -51,20 +63,56 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily 
       )}
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {progression && (
+          <View style={styles.xpSection}>
+            <XPBar
+              level={progression.level}
+              title={progression.title}
+              progress={progression.progress}
+              xpInLevel={progression.xpInCurrentLevel}
+              xpToNext={progression.xpToNextLevel}
+              isMax={progression.isMaxLevel}
+            />
+            <View style={styles.statsRow}>
+              <Pressable onPress={onAchievements} style={[styles.miniStat, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+                <Text style={[styles.miniStatNum, { color: t.accent }]}>{achievementInfo.unlocked}/{achievementInfo.total}</Text>
+                <Text style={[styles.miniStatLabel, { color: t.textSec }]}>Badges</Text>
+              </Pressable>
+              <View style={[styles.miniStat, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+                <Text style={[styles.miniStatNum, { color: t.gold }]}>{dailyStreak}</Text>
+                <Text style={[styles.miniStatLabel, { color: t.textSec }]}>Day Streak</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Streak urgency: if user has a streak and hasn't done today's challenge */}
+        {dailyStreak >= 2 && !dailyDone && (
+          <Pressable onPress={onDaily} style={[styles.urgencyBanner, { backgroundColor: '#FF6B6B' + '18', borderColor: '#FF6B6B' }]}>
+            <Text style={styles.urgencyEmoji}>{'\uD83D\uDD25'}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.urgencyTitle, { color: '#FF6B6B' }]}>Don't lose your {dailyStreak}-day streak!</Text>
+              <Text style={[styles.urgencyDesc, { color: t.textSec }]}>~{hoursLeft}h left to complete today's challenge</Text>
+            </View>
+          </Pressable>
+        )}
+
         <Pressable
           onPress={onDaily}
           style={({ pressed }) => [styles.dailyCard, {
-            backgroundColor: t.gold + '15',
-            borderColor: t.gold,
+            backgroundColor: dailyDone ? t.accent + '10' : t.gold + '15',
+            borderColor: dailyDone ? t.accent : t.gold,
             transform: [{ scale: pressed ? 0.97 : 1 }],
           }]}
         >
           <View style={styles.dailyLeft}>
-            <Text style={{ fontSize: 28 }}>{'\uD83C\uDFC6'}</Text>
+            <Text style={{ fontSize: 28 }}>{dailyDone ? '\u2705' : '\uD83C\uDFC6'}</Text>
           </View>
           <View style={styles.dailyCenter}>
-            <Text style={[styles.dailyTitle, { color: t.gold }]}>Daily Challenge</Text>
-            <Text style={[styles.dailyDesc, { color: t.textSec }]}>{daily.gameName} \u2014 {daily.description}</Text>
+            <Text style={[styles.dailyTitle, { color: dailyDone ? t.accent : t.gold }]}>
+              {dailyDone ? 'Challenge Complete!' : 'Daily Challenge'}
+            </Text>
+            <Text style={[styles.dailyDesc, { color: t.textSec }]}>{daily.gameName} {'\u2014'} {daily.description}</Text>
           </View>
           {dailyDone && (
             <View style={[styles.dailyCheck, { backgroundColor: t.accent }]}>
@@ -105,8 +153,17 @@ const styles = StyleSheet.create({
   proBadge: { backgroundColor: '#FFB300', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
   proText: { color: '#fff', fontSize: 11, fontWeight: '900', letterSpacing: 1 },
   iconBtn: { width: 40, alignItems: 'center' },
-  subtitle: { fontSize: 14, fontWeight: '600', textAlign: 'center', marginBottom: 12 },
+  subtitle: { fontSize: 14, fontWeight: '600', textAlign: 'center', marginBottom: 8 },
   scrollContent: { paddingHorizontal: 16, paddingBottom: 30 },
+  xpSection: { marginBottom: 14 },
+  statsRow: { flexDirection: 'row', gap: 10, marginTop: 10 },
+  miniStat: { flex: 1, borderRadius: 12, padding: 10, alignItems: 'center', borderWidth: 1 },
+  miniStatNum: { fontSize: 18, fontWeight: '900' },
+  miniStatLabel: { fontSize: 11, fontWeight: '600', marginTop: 2 },
+  urgencyBanner: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 12 },
+  urgencyEmoji: { fontSize: 24 },
+  urgencyTitle: { fontSize: 14, fontWeight: '800' },
+  urgencyDesc: { fontSize: 12, fontWeight: '500', marginTop: 2 },
   dailyCard: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 18, borderWidth: 2, marginBottom: 16 },
   dailyLeft: { marginRight: 12 },
   dailyCenter: { flex: 1 },
