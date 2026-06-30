@@ -25,6 +25,9 @@ export default function Board({ state, onPress, disabled }: Props) {
             key={i}
             disabled={disabled || !!v}
             onPress={() => onPress(i)}
+            accessibilityRole="button"
+            accessibilityLabel={`Row ${r + 1}, column ${c + 1}${v ? `, ${v === 'human' ? 'X' : 'O'}` : ', empty'}`}
+            accessibilityState={{ disabled: disabled || !!v }}
             style={[styles.cell, {
               width: cell, height: cell,
               backgroundColor: t.surface,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, SafeAreaView, ScrollView, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, SafeAreaView, ScrollView, Platform, Alert } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
 import { GAMES, GameId, GameInfo } from '../constants/games';
@@ -7,6 +7,9 @@ import { getDailyChallenge, isDailyChallengeCompleted, getDailyStreak } from '..
 import { getParentalState } from '../services/parentalControl';
 import { getProgression, ProgressionState } from '../services/progressionManager';
 import { getUnlockedCount } from '../services/achievementManager';
+import { getPlayerProfile } from '../services/avatarManager';
+import { claimFreeDailyPowerUp, hasClaimedFreeDailyPowerUp, POWERUPS, PowerUpType } from '../services/powerupManager';
+import { getDaysRemaining, getTournamentState } from '../services/weeklyTournament';
 import AnimatedScreen from '../components/shared/AnimatedScreen';
 import XPBar from '../components/shared/XPBar';
 
@@ -18,9 +21,12 @@ interface Props {
   onAchievements: () => void;
   onHowToPlay: () => void;
   onWeeklyRecap: () => void;
+  onAvatar: () => void;
+  onBoardSkins: () => void;
+  onTournament: () => void;
 }
 
-export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily, onAchievements, onHowToPlay, onWeeklyRecap }: Props) {
+export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily, onAchievements, onHowToPlay, onWeeklyRecap, onAvatar, onBoardSkins, onTournament }: Props) {
   const { theme: t } = useTheme();
   const { isPremium } = usePremium();
   const [dailyDone, setDailyDone] = useState(false);
@@ -28,6 +34,10 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
   const [progression, setProgression] = useState<ProgressionState | null>(null);
   const [achievementInfo, setAchievementInfo] = useState({ unlocked: 0, total: 0 });
   const [dailyStreak, setDailyStreak] = useState(0);
+  const [playerAvatar, setPlayerAvatar] = useState('\uD83D\uDE0E');
+  const [playerName, setPlayerName] = useState('Player');
+  const [canClaimPowerUp, setCanClaimPowerUp] = useState(false);
+  const [tournamentCompleted, setTournamentCompleted] = useState(0);
   const daily = getDailyChallenge();
 
   useEffect(() => {
@@ -36,7 +46,19 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
     getProgression().then(setProgression);
     getUnlockedCount().then(setAchievementInfo);
     getDailyStreak().then(s => setDailyStreak(s.current));
+    getPlayerProfile().then(p => { setPlayerAvatar(p.avatar); setPlayerName(p.name); });
+    hasClaimedFreeDailyPowerUp().then(claimed => setCanClaimPowerUp(!claimed));
+    getTournamentState().then(s => setTournamentCompleted(s.completedCount));
   }, []);
+
+  const handleClaimPowerUp = async () => {
+    const type = await claimFreeDailyPowerUp();
+    if (type) {
+      const pu = POWERUPS.find(p => p.type === type);
+      Alert.alert('Daily Power-Up!', `You received: ${pu?.icon} ${pu?.name}!\n\nUse it in your next game.`);
+      setCanClaimPowerUp(false);
+    }
+  };
 
   const hoursLeft = 23 - new Date().getHours();
 
@@ -44,14 +66,14 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
       <AnimatedScreen>
       <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? 44 : 8 }]}>
-        <Pressable onPress={onStats} style={styles.iconBtn}>
-          <Text style={{ fontSize: 22 }}>{'\uD83D\uDCCA'}</Text>
+        <Pressable onPress={onAvatar} style={styles.avatarBtn} accessibilityRole="button" accessibilityLabel="Edit your profile">
+          <Text style={{ fontSize: 26 }}>{playerAvatar}</Text>
         </Pressable>
         <View style={styles.titleRow}>
-          <Text style={[styles.title, { color: t.text }]}>Brain Box</Text>
+          <Text style={[styles.title, { color: t.text }]} accessibilityRole="header">Brain Box</Text>
           {isPremium && <View style={styles.proBadge}><Text style={styles.proText}>PRO</Text></View>}
         </View>
-        <Pressable onPress={onSettings} style={styles.iconBtn}>
+        <Pressable onPress={onSettings} style={styles.iconBtn} accessibilityRole="button" accessibilityLabel="Settings">
           <Text style={{ fontSize: 22 }}>{'\u2699'}</Text>
         </Pressable>
       </View>
@@ -76,7 +98,7 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
               isMax={progression.isMaxLevel}
             />
             <View style={styles.statsRow}>
-              <Pressable onPress={onAchievements} style={[styles.miniStat, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+              <Pressable onPress={onAchievements} style={[styles.miniStat, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel={`Achievements: ${achievementInfo.unlocked} of ${achievementInfo.total} badges unlocked`}>
                 <Text style={[styles.miniStatNum, { color: t.accent }]}>{achievementInfo.unlocked}/{achievementInfo.total}</Text>
                 <Text style={[styles.miniStatLabel, { color: t.textSec }]}>Badges</Text>
               </Pressable>
@@ -86,13 +108,21 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
               </View>
             </View>
             <View style={styles.quickRow}>
-              <Pressable onPress={onHowToPlay} style={[styles.quickBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
-                <Text style={styles.quickIcon}>{'\u2753'}</Text>
-                <Text style={[styles.quickLabel, { color: t.text }]}>How to Play</Text>
-              </Pressable>
-              <Pressable onPress={onWeeklyRecap} style={[styles.quickBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+              <Pressable onPress={onStats} style={[styles.quickBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="Game statistics">
                 <Text style={styles.quickIcon}>{'\uD83D\uDCCA'}</Text>
-                <Text style={[styles.quickLabel, { color: t.text }]}>Weekly Recap</Text>
+                <Text style={[styles.quickLabel, { color: t.text }]}>Stats</Text>
+              </Pressable>
+              <Pressable onPress={onHowToPlay} style={[styles.quickBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="How to play">
+                <Text style={styles.quickIcon}>{'\u2753'}</Text>
+                <Text style={[styles.quickLabel, { color: t.text }]}>Rules</Text>
+              </Pressable>
+              <Pressable onPress={onBoardSkins} style={[styles.quickBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="Board skins">
+                <Text style={styles.quickIcon}>{'\uD83C\uDFA8'}</Text>
+                <Text style={[styles.quickLabel, { color: t.text }]}>Skins</Text>
+              </Pressable>
+              <Pressable onPress={onWeeklyRecap} style={[styles.quickBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="Weekly recap">
+                <Text style={styles.quickIcon}>{'\uD83D\uDCC5'}</Text>
+                <Text style={[styles.quickLabel, { color: t.text }]}>Recap</Text>
               </Pressable>
             </View>
           </View>
@@ -110,7 +140,46 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
         )}
 
         <Pressable
+          onPress={onTournament}
+          accessibilityRole="button"
+          accessibilityLabel="Weekly tournament"
+          style={({ pressed }) => [styles.tournamentCard, {
+            backgroundColor: t.player + '12',
+            borderColor: t.player,
+            transform: [{ scale: pressed ? 0.97 : 1 }],
+          }]}
+        >
+          <Text style={{ fontSize: 24 }}>{'\uD83C\uDFC6'}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.tournamentTitle, { color: t.player }]}>Weekly Tournament</Text>
+            <Text style={[styles.tournamentDesc, { color: t.textSec }]}>
+              {tournamentCompleted}/5 puzzles {'\u2022'} {getDaysRemaining()}d left
+            </Text>
+          </View>
+          <Text style={{ fontSize: 16, color: t.textSec }}>{'\u25B6'}</Text>
+        </Pressable>
+
+        {canClaimPowerUp && (
+          <Pressable
+            onPress={handleClaimPowerUp}
+            style={({ pressed }) => [styles.powerUpClaim, {
+              backgroundColor: t.gold + '18',
+              borderColor: t.gold,
+              transform: [{ scale: pressed ? 0.96 : 1 }],
+            }]}
+          >
+            <Text style={{ fontSize: 22 }}>{'\uD83C\uDF81'}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.powerUpTitle, { color: t.gold }]}>Free Daily Power-Up!</Text>
+              <Text style={[styles.powerUpDesc, { color: t.textSec }]}>Tap to claim a random power-up</Text>
+            </View>
+          </Pressable>
+        )}
+
+        <Pressable
           onPress={onDaily}
+          accessibilityRole="button"
+          accessibilityLabel={dailyDone ? 'Daily challenge completed' : 'Play daily challenge'}
           style={({ pressed }) => [styles.dailyCard, {
             backgroundColor: dailyDone ? t.accent + '10' : t.gold + '15',
             borderColor: dailyDone ? t.accent : t.gold,
@@ -141,10 +210,13 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
                 key={game.id}
                 onPress={() => {
                   if (locked) {
-                    return; // Don't navigate
+                    return;
                   }
                   onSelectGame(game.id);
                 }}
+                accessibilityRole="button"
+                accessibilityLabel={locked ? `${game.name}, locked until level ${game.unlockLevel}` : `Play ${game.name}`}
+                accessibilityState={{ disabled: locked }}
                 style={({ pressed }) => [
                   styles.card,
                   { backgroundColor: t.card, borderColor: locked ? t.gold : t.cardBorder, transform: [{ scale: pressed && !locked ? 0.96 : 1 }] },
@@ -179,6 +251,7 @@ const styles = StyleSheet.create({
   proBadge: { backgroundColor: '#FFB300', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
   proText: { color: '#fff', fontSize: 11, fontWeight: '900', letterSpacing: 1 },
   iconBtn: { width: 40, alignItems: 'center' },
+  avatarBtn: { width: 40, alignItems: 'center' },
   subtitle: { fontSize: 14, fontWeight: '600', textAlign: 'center', marginBottom: 8 },
   scrollContent: { paddingHorizontal: 16, paddingBottom: 30 },
   xpSection: { marginBottom: 14 },
@@ -212,4 +285,10 @@ const styles = StyleSheet.create({
   quickLabel: { fontSize: 12, fontWeight: '700' },
   limitBanner: { marginHorizontal: 16, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, alignItems: 'center', marginBottom: 8 },
   limitText: { fontSize: 13, fontWeight: '700' },
+  tournamentCard: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 10, gap: 12 },
+  tournamentTitle: { fontSize: 14, fontWeight: '800' },
+  tournamentDesc: { fontSize: 12, fontWeight: '500', marginTop: 2 },
+  powerUpClaim: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 10, gap: 12 },
+  powerUpTitle: { fontSize: 14, fontWeight: '800' },
+  powerUpDesc: { fontSize: 12, fontWeight: '500', marginTop: 2 },
 });

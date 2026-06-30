@@ -3,5 +3,5 @@
   "compilerOptions": {
     "strict": true
   },
-  "exclude": ["app", "node_modules", "scripts"]
+  "exclude": ["app", "node_modules", "scripts", "__tests__"]
 }

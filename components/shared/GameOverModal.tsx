@@ -223,26 +223,26 @@ export default function GameOverModal({
 
           <Text style={[styles.shareLabel, { color: t.textSec }]}>Challenge a friend</Text>
           <View style={styles.socialRow}>
-            <Pressable onPress={handleShare} style={[styles.socialBtn, { backgroundColor: t.surfaceAlt }]}>
+            <Pressable onPress={handleShare} style={[styles.socialBtn, { backgroundColor: t.surfaceAlt }]} accessibilityRole="button" accessibilityLabel="Share result">
               <Text style={styles.socialIcon}>{'\uD83D\uDD17'}</Text>
               <Text style={[styles.socialText, { color: t.text }]}>Share</Text>
             </Pressable>
-            <Pressable onPress={handleWhatsApp} style={[styles.socialBtn, { backgroundColor: '#25D366' }]}>
+            <Pressable onPress={handleWhatsApp} style={[styles.socialBtn, { backgroundColor: '#25D366' }]} accessibilityRole="button" accessibilityLabel="Share on WhatsApp">
               <Text style={styles.socialIcon}>{'\uD83D\uDCAC'}</Text>
               <Text style={[styles.socialText, { color: '#fff' }]}>WhatsApp</Text>
             </Pressable>
-            <Pressable onPress={handleTwitter} style={[styles.socialBtn, { backgroundColor: '#1DA1F2' }]}>
+            <Pressable onPress={handleTwitter} style={[styles.socialBtn, { backgroundColor: '#1DA1F2' }]} accessibilityRole="button" accessibilityLabel="Share on Twitter">
               <Text style={styles.socialIcon}>{'\uD83D\uDC26'}</Text>
               <Text style={[styles.socialText, { color: '#fff' }]}>Twitter</Text>
             </Pressable>
           </View>
 
           <View style={styles.btns}>
-            <Pressable onPress={onPlayAgain} style={[styles.btn, { backgroundColor: t.accent }]}>
+            <Pressable onPress={onPlayAgain} style={[styles.btn, { backgroundColor: t.accent }]} accessibilityRole="button" accessibilityLabel={isDaily ? 'Go home' : 'Play again'}>
               <Text style={[styles.btnTxt, { color: '#fff' }]}>{isDaily ? 'Home' : (closeLossMsg ? 'Try Again!' : 'Play Again')}</Text>
             </Pressable>
             {!isDaily && (
-              <Pressable onPress={onHome} style={[styles.btn, { backgroundColor: t.surfaceAlt }]}>
+              <Pressable onPress={onHome} style={[styles.btn, { backgroundColor: t.surfaceAlt }]} accessibilityRole="button" accessibilityLabel="Go to home screen">
                 <Text style={[styles.btnTxt, { color: t.textSec }]}>Home</Text>
               </Pressable>
             )}

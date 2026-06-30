@@ -1,43 +1,44 @@
 {
-  "name": "dotsandboxes",
-  "version": "1.0.0",
+  "name": "brainbox",
+  "version": "2.0.0",
   "main": "expo/AppEntry",
   "dependencies": {
     "@expo/metro-runtime": "~56.0.15",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@sentry/react-native": "~7.11.0",
     "expo": "~56.0.12",
+    "expo-asset": "~56.0.17",
     "expo-audio": "~56.0.12",
-    "expo-constants": "~56.0.18",
     "expo-haptics": "~56.0.3",
-    "expo-linking": "~56.0.14",
     "expo-notifications": "~56.0.18",
-    "expo-router": "~56.2.11",
     "expo-splash-screen": "~56.0.10",
     "expo-status-bar": "~56.0.4",
     "expo-store-review": "~56.0.3",
-    "expo-system-ui": "~56.0.5",
+    "expo-updates": "~56.0.19",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.3",
     "react-native-gesture-handler": "~2.31.1",
-    "react-native-reanimated": "~4.3.1",
-    "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "~4.25.2",
-    "react-native-web": "^0.21.2",
-    "react-native-worklets": "0.8.3"
+    "react-native-google-mobile-ads": "^16.4.0",
+    "react-native-iap": "^15.3.4"
   },
   "devDependencies": {
+    "@types/jest": "29.5.14",
     "@types/react": "~19.2.2",
+    "jest": "~29.7.0",
     "sharp": "^0.35.2",
+    "ts-jest": "^29.4.11",
     "typescript": "~6.0.3"
   },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
     "build:android": "eas build --platform android --profile production",
-    "build:preview": "eas build --platform android --profile preview"
+    "build:preview": "eas build --platform android --profile preview",
+    "submit:android": "eas submit --platform android --profile production"
   },
   "private": true
 }

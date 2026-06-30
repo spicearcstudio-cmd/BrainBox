@@ -28,10 +28,10 @@ export default function GameHeader({ title, onBack, showConfirmOnBack = true }: 
 
   return (
     <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? 44 : 8 }]}>
-      <Pressable onPress={handleBack} style={styles.backBtn}>
+      <Pressable onPress={handleBack} style={styles.backBtn} accessibilityRole="button" accessibilityLabel="Go back">
         <Text style={[styles.backText, { color: t.textSec }]}>{'\u2190'}</Text>
       </Pressable>
-      <Text style={[styles.title, { color: t.text }]}>{title}</Text>
+      <Text style={[styles.title, { color: t.text }]} accessibilityRole="header">{title}</Text>
       <View style={styles.backBtn} />
     </View>
   );

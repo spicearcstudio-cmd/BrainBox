@@ -8,7 +8,25 @@ export async function isNotificationsEnabled(): Promise<boolean> {
   return (await loadData(NOTIF_ENABLED_KEY)) === 'true';
 }
 
+async function ensureChannel(): Promise<void> {
+  if (Platform.OS !== 'android') return;
+  try {
+    const Notifications = await import('expo-notifications');
+    await Notifications.setNotificationChannelAsync('daily', {
+      name: 'Daily Reminders',
+      importance: Notifications.AndroidImportance.HIGH,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#5C6BC0',
+      sound: 'default',
+    });
+  } catch {}
+}
+
 export async function setNotificationsEnabled(val: boolean): Promise<void> {
+  if (val) {
+    const granted = await requestPermissions();
+    if (!granted) return;
+  }
   await saveData(NOTIF_ENABLED_KEY, String(val));
   if (val) {
     await scheduleDailyReminder();
@@ -20,6 +38,7 @@ export async function setNotificationsEnabled(val: boolean): Promise<void> {
 export async function scheduleDailyReminder(): Promise<void> {
   try {
     const Notifications = await import('expo-notifications');
+    await ensureChannel();
 
     const { status } = await Notifications.getPermissionsAsync();
     if (status !== 'granted') {
@@ -29,12 +48,14 @@ export async function scheduleDailyReminder(): Promise<void> {
 
     await Notifications.cancelAllScheduledNotificationsAsync();
 
-    // Daily challenge reminder at 9 AM
+    const channelId = Platform.OS === 'android' ? 'daily' : undefined;
+
     await Notifications.scheduleNotificationAsync({
       content: {
         title: '\uD83E\uDDE0 Daily Challenge Waiting!',
         body: 'Your daily brain puzzle is ready. Keep your streak alive!',
         sound: true,
+        ...(channelId && { channelId }),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -43,12 +64,12 @@ export async function scheduleDailyReminder(): Promise<void> {
       },
     });
 
-    // Evening reminder at 8 PM
     await Notifications.scheduleNotificationAsync({
       content: {
         title: '\uD83D\uDD25 Don\'t Break Your Streak!',
         body: 'You haven\'t played today. A quick game keeps the streak going!',
         sound: true,
+        ...(channelId && { channelId }),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,

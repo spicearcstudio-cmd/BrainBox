@@ -2,6 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { usePremium } from '../../context/PremiumContext';
 import { useTheme } from '../../context/ThemeContext';
+import { BANNER_ID } from '../../services/adManager';
+
+let BannerAd: any = null;
+let BannerAdSize: any = null;
+try {
+  const gma = require('react-native-google-mobile-ads');
+  BannerAd = gma.BannerAd;
+  BannerAdSize = gma.BannerAdSize;
+} catch {}
 
 export default function AdBanner() {
   const { isPremium } = usePremium();
@@ -9,14 +18,22 @@ export default function AdBanner() {
 
   if (isPremium) return null;
 
+  if (BannerAd && BannerAdSize) {
+    return (
+      <View style={styles.banner}>
+        <BannerAd unitId={BANNER_ID} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+      </View>
+    );
+  }
+
   return (
-    <View style={[styles.banner, { backgroundColor: t.surfaceAlt, borderColor: t.cardBorder }]}>
-      <Text style={[styles.text, { color: t.textSec }]}>Ad Space \u2014 Go Premium to remove</Text>
+    <View style={[styles.banner, { backgroundColor: t.surfaceAlt, borderColor: t.cardBorder, borderTopWidth: 1 }]}>
+      <Text style={[styles.text, { color: t.textSec }]}>Ad Space {'\u2014'} Go Premium to remove</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  banner: { height: 50, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1 },
+  banner: { minHeight: 50, justifyContent: 'center', alignItems: 'center' },
   text: { fontSize: 12, fontWeight: '600' },
 });

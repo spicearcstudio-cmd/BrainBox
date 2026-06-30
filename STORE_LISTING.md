@@ -7,69 +7,77 @@ Brain Box: Strategy Games
 
 ## Short Description (80 chars max)
 ```
-7 classic brain games with AI, 2-player mode, daily challenges & level unlocks!
+7 brain games, smart AI rivals, daily challenges, power-ups & weekly tournaments
 ```
 
 ## Full Description (4000 chars max)
 ```
 🧠 Train your brain with 7 addictive classic strategy games — all in one app!
 
-Brain Box brings together the best classic puzzle and strategy games, beautifully designed with a cheerful modern interface. Play solo against a smart AI, challenge a friend on the same device, or take on a fresh Daily Challenge every day.
+Brain Box brings together the best classic puzzle and strategy games, beautifully designed with a cheerful modern interface. Challenge smart AI opponents with unique personalities, compete in weekly tournaments, or pass the phone for 2-player fun.
 
 ━━━━━━━━━━━━━━━━━━━━
 🎮 7 CLASSIC GAMES
 ━━━━━━━━━━━━━━━━━━━━
 
-▪ DOTS & BOXES — Connect dots, claim boxes, outsmart the AI on grids from 4×4 to 7×7
-▪ TIC TAC TOE — The timeless classic, now with bigger boards up to 5×5
-▪ CONNECT FOUR — Drop discs and line up four to win on boards up to 9×7
-▪ MEMORY MATCH — Flip cards and find all matching pairs in the fewest turns
-▪ COLOR FLOOD — Flood the entire board with one color before you run out of moves
-▪ REVERSI — 🔓 Unlocks at Level 25! Flip your opponent's pieces and dominate the board
-▪ 2048 — 🔓 Unlocks at Level 50! Slide, merge, and reach the legendary 2048 tile
+▸ DOTS & BOXES — Connect dots, claim boxes, outsmart the AI on grids from 4×4 to 7×7
+▸ TIC TAC TOE — The timeless classic with bigger boards up to 5×5
+▸ CONNECT FOUR — Drop discs and line up four to win on boards up to 9×7
+▸ MEMORY MATCH — Flip cards and find all pairs in the fewest turns
+▸ COLOR FLOOD — Flood the board with one color before moves run out
+▸ REVERSI — 🔓 Unlocks at Level 25! Flip pieces and dominate the board
+▸ 2048 — 🔓 Unlocks at Level 50! Slide, merge, and hit the legendary tile
 
 ━━━━━━━━━━━━━━━━━━━━
-⭐ KEY FEATURES
+⭐ WHY PLAYERS LOVE BRAIN BOX
 ━━━━━━━━━━━━━━━━━━━━
 
-🤖 SMART AI OPPONENTS — Multiple difficulty levels that adapt to every board size. From casual to ruthless — find your perfect challenge.
+🤖 AI WITH PERSONALITY — Meet Buddy, Nova, Apex & Omega. Each AI rival has a unique personality, trash-talks when winning, and cheers you on when you're close. From casual to ruthless — find your match.
 
-🔓 UNLOCKABLE GAMES — Earn XP, level up, and unlock 2 bonus games! Reversi at Level 25 and the legendary 2048 at Level 50. Every game you play brings you closer.
+⚡ POWER-UPS — Gain an edge with Peek, Extra Move, Undo & Freeze Timer. Claim a free power-up every day, or earn more through rewarded videos.
 
-⭐ XP & LEVELING — Progress from Newbie to Brain God across 52 levels. Every game earns XP — even losses! Star ratings reward perfection.
+🏆 WEEKLY TOURNAMENTS — 5 curated puzzles every week. Earn stars, climb the ranks, and share your results with friends.
 
-🏅 18 ACHIEVEMENTS — Unlock badges for milestones, streaks, and mastery. How many can you collect?
+⭐ XP & 52 LEVELS — Progress from Newbie to Brain God. Every game earns XP — even losses! Star ratings (★★★) reward perfection.
 
-👥 2-PLAYER MODE — Pass and play on the same device. Perfect for road trips, waiting rooms, or game night with friends and family.
+🔓 UNLOCK AS YOU GROW — Earn XP to unlock 2 bonus games, 8 board skins, and new challenges. Every session brings you closer.
 
-🏆 DAILY CHALLENGES — A new unique puzzle every day. Build your streak and see how many days you can keep it going!
+🎨 BOARD SKINS — 8 unlockable visual styles that transform your game boards. Classic, Midnight, Ocean, Forest, Sunset, Candy, Royal & Neon.
 
-📊 STATS & STREAKS — Track your wins, loss streaks, best scores, and win rates across all five games. How far can you push your stats?
+🏅 18 ACHIEVEMENTS — Collect badges for milestones, streaks, and mastery. Share your collection.
 
-🎨 4 BEAUTIFUL THEMES — Cheerful, Ocean, Sunset, and Forest. Switch up your look whenever you want.
+👥 LOCAL 2-PLAYER — Pass and play on the same device. Perfect for road trips, waiting rooms, or game night.
 
-🔊 SOUND & HAPTICS — Satisfying sound effects and tactile feedback on every tap, win, and match. Toggle on or off anytime.
+📅 DAILY CHALLENGES — A fresh puzzle every day. Build your streak — how many days can you go?
 
-🔒 PARENTAL CONTROLS — Set a daily game limit to manage screen time. Changes take effect the next day so there's no mid-session disruption.
+🎭 CUSTOM AVATAR & NAME — Pick from 25 avatars and set your player name.
 
-🎊 CELEBRATIONS — Confetti animations and victory sounds when you win. Because every win deserves a celebration!
+🎨 9 THEMES — Cheerful, Ocean, Sunset, Forest, Dark, plus seasonal themes (Christmas, Halloween, Diwali, Summer). Auto dark mode support.
+
+⏱ SPEED MODE — Race the clock for bonus XP and adrenaline.
+
+📊 FULL STATS — Win rates, streaks, star counts, weekly recaps — track everything across all 7 games.
+
+🔊 SOUND & HAPTICS — Satisfying effects on every tap, match, and win. Toggle anytime.
+
+🔒 PARENTAL CONTROLS — Set daily game limits for screen time management.
+
+🎊 CELEBRATIONS — Confetti, animations, and level-up effects when you win.
 
 ━━━━━━━━━━━━━━━━━━━━
 💎 GO PREMIUM
 ━━━━━━━━━━━━━━━━━━━━
 
-Upgrade once, enjoy forever:
-✓ Remove all advertisements
-✓ Unlock exclusive premium themes
-✓ Full offline play support
+One purchase, yours forever:
+✓ Remove all ads
+✓ Unlock premium themes
+✓ Full offline play
 
 ━━━━━━━━━━━━━━━━━━━━
 
-Brain Box is designed for players of all ages. Whether you're looking for a quick brain teaser during your commute or a fun game to play with your kids, Brain Box has something for everyone.
+No internet required. No account needed. No data collected. Just pure classic gaming fun for all ages.
 
-No internet required. No account needed. Just pure classic gaming fun.
-
-Download Brain Box now and start training your brain! 🧠
+Download Brain Box and start training your brain today! 🧠
 ```
 
 ## Category
@@ -84,7 +92,7 @@ puzzle, strategy, brain games, board games, classic games
 
 ## Content Rating
 ```
-Everyone (no objectionable content, no user interaction, no data sharing)
+Everyone (contains ads, in-app purchases)
 ```
 
 ## Contact Email
@@ -164,16 +172,20 @@ https://spicearcstudio-cmd.github.io/BrainBox/
 4. **Release name:** 2.0.0 (auto-filled)
 5. **Release notes:**
 ```
-🎉 Welcome to Brain Box!
+🎉 Welcome to Brain Box 2.0!
 
-5 classic strategy games in one app:
+7 classic strategy & puzzle games in one app:
 • Dots & Boxes, Tic Tac Toe, Connect Four, Memory Match, Color Flood
-• Play vs AI or 2 Players on the same device
+• Reversi (unlocks at Level 25) & 2048 (unlocks at Level 50)
+• Smart AI with 3 difficulty levels
+• XP & leveling system with 52 levels
+• 18 unlockable achievements & star ratings
 • Daily Challenges with streak tracking
-• 4 beautiful color themes
-• Game stats and win tracking
-• Parental controls for screen time management
-• Sound effects and celebration animations
+• Local 2-player & Speed Mode
+• 9 beautiful themes including seasonal & dark mode
+• Weekly recap, push notifications & parental controls
+• Google Play Billing & AdMob integrated
+• Crash reporting with Sentry
 ```
 6. Click **Review release** → **Start rollout to Production**
 

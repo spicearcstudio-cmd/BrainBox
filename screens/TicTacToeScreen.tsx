@@ -9,7 +9,9 @@ import GameHeader from '../components/shared/GameHeader';
 import ScoreBar from '../components/shared/ScoreBar';
 import GameOverModal from '../components/shared/GameOverModal';
 import AdBanner from '../components/shared/AdBanner';
+import AIBubble from '../components/shared/AIBubble';
 import { playSound, haptic } from '../services/soundManager';
+import { getPersona, getRandomMessage } from '../services/aiPersonality';
 
 interface Props {
   diff: DifficultyOption;
@@ -22,17 +24,30 @@ export default function TicTacToeScreen({ diff, onHome, twoPlayer = false, isDai
   const { theme: t } = useTheme();
   const [state, setState] = useState<TTTState>(() => createInitialState(diff.gridSize));
   const proc = useRef(false);
+  const persona = getPersona(diff.key);
+  const [aiMsg, setAiMsg] = useState<string | null>(null);
+  const [aiThinking, setAiThinking] = useState(false);
 
   useEffect(() => {
     if (!twoPlayer && state.currentPlayer === 'ai' && !state.gameOver && !proc.current) {
       proc.current = true;
+      setAiThinking(true);
       const timer = setTimeout(() => {
         const move = getAIMove(state, diff.key);
         proc.current = false;
+        setAiThinking(false);
         setState(prev => makeMove(prev, move));
         playSound('move');
+        if (Math.random() < 0.35) {
+          setAiMsg(getRandomMessage(persona.tauntOnMove));
+        }
       }, 400 + Math.random() * 300);
-      return () => { clearTimeout(timer); proc.current = false; };
+      return () => { clearTimeout(timer); proc.current = false; setAiThinking(false); };
+    }
+    if (state.gameOver && state.winner && !twoPlayer) {
+      setTimeout(() => {
+        setAiMsg(getRandomMessage(state.winner === 'ai' ? persona.tauntOnWin : persona.tauntOnLose));
+      }, 300);
     }
   }, [state, diff.key, twoPlayer]);
 
@@ -75,6 +90,7 @@ export default function TicTacToeScreen({ diff, onHome, twoPlayer = false, isDai
       <GameHeader title="Tic Tac Toe" onBack={onHome} />
       <ScoreBar humanScore={humanMarks} aiScore={aiMarks} currentPlayer={state.currentPlayer}
         gameOver={state.gameOver} humanLabel={p1Label} aiLabel={p2Label} />
+      {!twoPlayer && <AIBubble persona={persona} message={aiMsg} isThinking={aiThinking} />}
       <View style={styles.boardWrap}>
         <Board state={state} onPress={handlePress}
           disabled={!twoPlayer && (state.currentPlayer !== 'human' || state.gameOver)} />

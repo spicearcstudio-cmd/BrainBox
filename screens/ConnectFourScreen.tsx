@@ -9,7 +9,9 @@ import GameHeader from '../components/shared/GameHeader';
 import ScoreBar from '../components/shared/ScoreBar';
 import GameOverModal from '../components/shared/GameOverModal';
 import AdBanner from '../components/shared/AdBanner';
+import AIBubble from '../components/shared/AIBubble';
 import { playSound, haptic } from '../services/soundManager';
+import { getPersona, getRandomMessage } from '../services/aiPersonality';
 
 interface Props {
   diff: DifficultyOption;
@@ -24,17 +26,28 @@ export default function ConnectFourScreen({ diff, onHome, twoPlayer = false, isD
   const cols = diff.gridCols ?? 7;
   const [state, setState] = useState<C4State>(() => createInitialState(rows, cols));
   const proc = useRef(false);
+  const persona = getPersona(diff.key);
+  const [aiMsg, setAiMsg] = useState<string | null>(null);
+  const [aiThinking, setAiThinking] = useState(false);
 
   useEffect(() => {
     if (!twoPlayer && state.currentPlayer === 'ai' && !state.gameOver && !proc.current) {
       proc.current = true;
+      setAiThinking(true);
       const timer = setTimeout(() => {
         const col = getAIMove(state, diff.key);
         proc.current = false;
+        setAiThinking(false);
         setState(prev => makeMove(prev, col));
         playSound('drop');
+        if (Math.random() < 0.3) setAiMsg(getRandomMessage(persona.tauntOnMove));
       }, 400 + Math.random() * 400);
-      return () => { clearTimeout(timer); proc.current = false; };
+      return () => { clearTimeout(timer); proc.current = false; setAiThinking(false); };
+    }
+    if (state.gameOver && state.winner && !twoPlayer) {
+      setTimeout(() => {
+        setAiMsg(getRandomMessage(state.winner === 'ai' ? persona.tauntOnWin : persona.tauntOnLose));
+      }, 300);
     }
   }, [state, diff.key, twoPlayer]);
 
@@ -77,6 +90,7 @@ export default function ConnectFourScreen({ diff, onHome, twoPlayer = false, isD
       <GameHeader title="Connect Four" onBack={onHome} />
       <ScoreBar humanScore={humanDiscs} aiScore={aiDiscs} currentPlayer={state.currentPlayer}
         gameOver={state.gameOver} humanLabel={p1Label} aiLabel={p2Label} />
+      {!twoPlayer && <AIBubble persona={persona} message={aiMsg} isThinking={aiThinking} />}
       <View style={styles.boardWrap}>
         <Board state={state} onDrop={handleDrop}
           disabled={!twoPlayer && (state.currentPlayer !== 'human' || state.gameOver)} />

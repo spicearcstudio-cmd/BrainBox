@@ -8,6 +8,8 @@ import { playSound, haptic } from '../services/soundManager';
 import ReversiBoard from '../components/reversi/Board';
 import GameHeader from '../components/shared/GameHeader';
 import GameOverModal from '../components/shared/GameOverModal';
+import AIBubble from '../components/shared/AIBubble';
+import { getPersona, getRandomMessage } from '../services/aiPersonality';
 
 interface Props {
   diff: DifficultyOption;
@@ -23,6 +25,9 @@ export default function ReversiScreen({ diff, onHome, twoPlayer, isDaily }: Prop
   const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState<'human' | 'ai' | 'draw' | null>(null);
   const aiThinking = useRef(false);
+  const persona = getPersona(diff.key);
+  const [aiMsg, setAiMsg] = useState<string | null>(null);
+  const [showAiThinking, setShowAiThinking] = useState(false);
 
   const pieces = countPieces(board);
 
@@ -73,6 +78,7 @@ export default function ReversiScreen({ diff, onHome, twoPlayer, isDaily }: Prop
   useEffect(() => {
     if (gameOver || twoPlayer || currentPlayer !== 2) return;
     aiThinking.current = true;
+    setShowAiThinking(true);
     const timer = setTimeout(() => {
       const move = getAIMove(board, diff.key);
       if (move) {
@@ -82,10 +88,12 @@ export default function ReversiScreen({ diff, onHome, twoPlayer, isDaily }: Prop
         if (!checkGameEnd(newBoard)) {
           switchTurn(newBoard, 1);
         }
+        if (Math.random() < 0.3) setAiMsg(getRandomMessage(persona.tauntOnMove));
       }
       aiThinking.current = false;
+      setShowAiThinking(false);
     }, 400);
-    return () => clearTimeout(timer);
+    return () => { clearTimeout(timer); setShowAiThinking(false); };
   }, [currentPlayer, gameOver, twoPlayer]);
 
   const handlePlayAgain = () => {
@@ -103,6 +111,7 @@ export default function ReversiScreen({ diff, onHome, twoPlayer, isDaily }: Prop
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
       <GameHeader title="Reversi" onBack={onHome} />
+      {!twoPlayer && <AIBubble persona={persona} message={aiMsg} isThinking={showAiThinking} />}
 
       <View style={styles.scoreRow}>
         <View style={[styles.scoreCard, currentPlayer === 1 && styles.activeCard, { backgroundColor: t.surface, borderColor: currentPlayer === 1 ? t.accent : t.cardBorder }]}>
