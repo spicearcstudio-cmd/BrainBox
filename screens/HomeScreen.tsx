@@ -16,9 +16,11 @@ interface Props {
   onStats: () => void;
   onDaily: () => void;
   onAchievements: () => void;
+  onHowToPlay: () => void;
+  onWeeklyRecap: () => void;
 }
 
-export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily, onAchievements }: Props) {
+export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily, onAchievements, onHowToPlay, onWeeklyRecap }: Props) {
   const { theme: t } = useTheme();
   const { isPremium } = usePremium();
   const [dailyDone, setDailyDone] = useState(false);
@@ -82,6 +84,16 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
                 <Text style={[styles.miniStatNum, { color: t.gold }]}>{dailyStreak}</Text>
                 <Text style={[styles.miniStatLabel, { color: t.textSec }]}>Day Streak</Text>
               </View>
+            </View>
+            <View style={styles.quickRow}>
+              <Pressable onPress={onHowToPlay} style={[styles.quickBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+                <Text style={styles.quickIcon}>{'\u2753'}</Text>
+                <Text style={[styles.quickLabel, { color: t.text }]}>How to Play</Text>
+              </Pressable>
+              <Pressable onPress={onWeeklyRecap} style={[styles.quickBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+                <Text style={styles.quickIcon}>{'\uD83D\uDCCA'}</Text>
+                <Text style={[styles.quickLabel, { color: t.text }]}>Weekly Recap</Text>
+              </Pressable>
             </View>
           </View>
         )}
@@ -194,6 +206,10 @@ const styles = StyleSheet.create({
   lockOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, justifyContent: 'center', alignItems: 'center', borderRadius: 20 },
   lockEmoji: { fontSize: 28, marginBottom: 4 },
   lockLevel: { fontSize: 12, fontWeight: '900', letterSpacing: 1 },
+  quickRow: { flexDirection: 'row', gap: 10, marginTop: 10 },
+  quickBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 10, borderRadius: 12, borderWidth: 1 },
+  quickIcon: { fontSize: 16 },
+  quickLabel: { fontSize: 12, fontWeight: '700' },
   limitBanner: { marginHorizontal: 16, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, alignItems: 'center', marginBottom: 8 },
   limitText: { fontSize: 13, fontWeight: '700' },
 });

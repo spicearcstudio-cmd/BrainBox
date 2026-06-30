@@ -3,9 +3,16 @@ import { View, Text, Pressable, StyleSheet, SafeAreaView, Platform } from 'react
 import { useTheme } from '../context/ThemeContext';
 import { GameInfo, DifficultyOption } from '../constants/games';
 
+const TIMED_OPTIONS = [
+  { label: 'Off', value: 0 },
+  { label: '30s', value: 30 },
+  { label: '60s', value: 60 },
+  { label: '90s', value: 90 },
+];
+
 interface Props {
   game: GameInfo;
-  onPlay: (diff: DifficultyOption, twoPlayer: boolean) => void;
+  onPlay: (diff: DifficultyOption, twoPlayer: boolean, timed?: number) => void;
   onBack: () => void;
 }
 
@@ -13,8 +20,10 @@ export default function GamePickerScreen({ game, onPlay, onBack }: Props) {
   const { theme: t } = useTheme();
   const [selected, setSelected] = useState(0);
   const [twoPlayer, setTwoPlayer] = useState(false);
+  const [timedIdx, setTimedIdx] = useState(0);
 
   const diff = game.difficulties[selected];
+  const timedValue = TIMED_OPTIONS[timedIdx].value;
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
@@ -67,8 +76,28 @@ export default function GamePickerScreen({ game, onPlay, onBack }: Props) {
         </View>
         <Text style={[styles.desc, { color: t.textSec }]}>{diff.desc}</Text>
 
+        {game.vsAI && !twoPlayer && (
+          <>
+            <Text style={[styles.sectionLabel, { color: t.textSec }]}>{'\u23F1'} SPEED MODE</Text>
+            <View style={styles.timedRow}>
+              {TIMED_OPTIONS.map((opt, i) => (
+                <Pressable
+                  key={opt.label}
+                  onPress={() => setTimedIdx(i)}
+                  style={[styles.timedBtn, {
+                    backgroundColor: timedIdx === i ? t.gold : t.surface,
+                    borderColor: timedIdx === i ? t.gold : t.cardBorder,
+                  }]}
+                >
+                  <Text style={[styles.timedLabel, { color: timedIdx === i ? '#fff' : t.text }]}>{opt.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </>
+        )}
+
         <Pressable
-          onPress={() => onPlay(diff, twoPlayer)}
+          onPress={() => onPlay(diff, twoPlayer, timedValue || undefined)}
           style={({ pressed }) => [styles.playBtn, { backgroundColor: game.color, opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }]}
         >
           <Text style={styles.playText}>PLAY</Text>
@@ -94,7 +123,10 @@ const styles = StyleSheet.create({
   diffBtn: { paddingVertical: 14, paddingHorizontal: 20, borderRadius: 14, borderWidth: 2, alignItems: 'center', minWidth: 75 },
   diffLabel: { fontSize: 14, fontWeight: '700' },
   diffGrid: { fontSize: 11, fontWeight: '600', marginTop: 2 },
-  desc: { fontSize: 13, marginTop: 12, marginBottom: 36 },
+  desc: { fontSize: 13, marginTop: 12, marginBottom: 20 },
+  timedRow: { flexDirection: 'row', gap: 8, marginBottom: 24 },
+  timedBtn: { paddingVertical: 10, paddingHorizontal: 18, borderRadius: 12, borderWidth: 1.5 },
+  timedLabel: { fontSize: 14, fontWeight: '700' },
   playBtn: { paddingVertical: 16, paddingHorizontal: 70, borderRadius: 18 },
   playText: { fontSize: 18, fontWeight: '900', color: '#fff', letterSpacing: 3 },
 });

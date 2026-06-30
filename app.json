@@ -5,8 +5,12 @@
     "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "backgroundColor": "#EDE7F6",
+    "splash": {
+      "backgroundColor": "#EDE7F6",
+      "resizeMode": "contain"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.brainbox.games"
@@ -30,7 +34,8 @@
     },
     "owner": "spicearcstudio",
     "plugins": [
-      "expo-audio"
+      "expo-audio",
+      "expo-notifications"
     ]
   }
 }

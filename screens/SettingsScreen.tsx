@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, SafeAreaView, Alert, Platform, Switch, TextInput, ScrollView } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
-import { ALL_THEMES } from '../constants/colors';
+import { ALL_THEMES, SEASONAL_THEMES, getActiveSeasonalTheme } from '../constants/colors';
 import { isSoundEnabled, setSoundEnabled, isHapticEnabled, setHapticEnabled, initSound } from '../services/soundManager';
 import { ParentalState, getParentalState, setParentalEnabled, setDailyLimit, PARENTAL_MIN_GAMES } from '../services/parentalControl';
+import { isNotificationsEnabled, setNotificationsEnabled } from '../services/notifications';
 
 interface Props { onBack: () => void }
 
@@ -15,6 +16,8 @@ export default function SettingsScreen({ onBack }: Props) {
   const [haptic, setHaptic] = useState(true);
   const [parental, setParental] = useState<ParentalState | null>(null);
   const [limitInput, setLimitInput] = useState('');
+  const [notif, setNotif] = useState(false);
+  const seasonalTheme = getActiveSeasonalTheme();
 
   useEffect(() => {
     initSound().then(() => {
@@ -25,10 +28,12 @@ export default function SettingsScreen({ onBack }: Props) {
       setParental(s);
       setLimitInput(String(s.dailyLimit));
     });
+    isNotificationsEnabled().then(setNotif);
   }, []);
 
   const toggleSound = (val: boolean) => { setSound(val); setSoundEnabled(val); };
   const toggleHaptic = (val: boolean) => { setHaptic(val); setHapticEnabled(val); };
+  const toggleNotif = async (val: boolean) => { setNotif(val); await setNotificationsEnabled(val); };
 
   const toggleParental = async (val: boolean) => {
     await setParentalEnabled(val);
@@ -87,6 +92,14 @@ export default function SettingsScreen({ onBack }: Props) {
           <View style={styles.toggleRow}>
             <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDCF3'} Haptic Feedback</Text>
             <Switch value={haptic} onValueChange={toggleHaptic} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
+          </View>
+          <View style={[styles.divider, { backgroundColor: t.cardBorder }]} />
+          <View style={styles.toggleRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDD14'} Notifications</Text>
+              <Text style={[styles.toggleHint, { color: t.textSec }]}>Daily challenge & streak reminders</Text>
+            </View>
+            <Switch value={notif} onValueChange={toggleNotif} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
           </View>
         </View>
 
@@ -148,6 +161,33 @@ export default function SettingsScreen({ onBack }: Props) {
           })}
         </View>
 
+        {seasonalTheme && (
+          <>
+            <Text style={[styles.sectionLabel, { color: t.textSec }]}>SEASONAL THEME</Text>
+            <Pressable
+              onPress={() => setThemeId(seasonalTheme.id)}
+              style={[styles.seasonalCard, {
+                backgroundColor: seasonalTheme.bg,
+                borderColor: themeId === seasonalTheme.id ? seasonalTheme.accent : seasonalTheme.cardBorder,
+                borderWidth: themeId === seasonalTheme.id ? 3 : 1.5,
+              }]}
+            >
+              <Text style={[styles.seasonalName, { color: seasonalTheme.text }]}>{'\uD83C\uDF89'} {seasonalTheme.name}</Text>
+              <Text style={[styles.seasonalDesc, { color: seasonalTheme.textSec }]}>Limited time theme!</Text>
+            </Pressable>
+          </>
+        )}
+
+        {SEASONAL_THEMES.length > 0 && !seasonalTheme && (
+          <>
+            <Text style={[styles.sectionLabel, { color: t.textSec }]}>SEASONAL THEMES</Text>
+            <View style={[styles.seasonalLocked, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+              <Text style={styles.seasonalLockedEmoji}>{'\uD83D\uDD12'}</Text>
+              <Text style={[styles.seasonalLockedText, { color: t.textSec }]}>Seasonal themes appear during holidays!</Text>
+            </View>
+          </>
+        )}
+
         {isPremium && (
           <View style={[styles.statusCard, { backgroundColor: t.surface, borderColor: t.accent }]}>
             <Text style={[styles.statusTitle, { color: t.accent }]}>Premium Active</Text>
@@ -193,4 +233,10 @@ const styles = StyleSheet.create({
   statusCard: { borderRadius: 16, padding: 18, alignItems: 'center', borderWidth: 2 },
   statusTitle: { fontSize: 16, fontWeight: '800' },
   statusDesc: { fontSize: 12, marginTop: 4 },
+  seasonalCard: { borderRadius: 16, padding: 18, alignItems: 'center', marginBottom: 24 },
+  seasonalName: { fontSize: 18, fontWeight: '800' },
+  seasonalDesc: { fontSize: 12, fontWeight: '500', marginTop: 4 },
+  seasonalLocked: { borderRadius: 16, padding: 18, alignItems: 'center', borderWidth: 1, marginBottom: 24 },
+  seasonalLockedEmoji: { fontSize: 24, marginBottom: 6 },
+  seasonalLockedText: { fontSize: 13, fontWeight: '500' },
 });

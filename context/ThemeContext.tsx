@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { AppTheme, ALL_THEMES, DEFAULT_THEME } from '../constants/colors';
+import { useColorScheme } from 'react-native';
+import { AppTheme, ALL_THEMES, SEASONAL_THEMES, DEFAULT_THEME, DARK_THEME } from '../constants/colors';
 import { loadData, saveData } from '../services/storage';
 
 interface ThemeCtx {
@@ -14,11 +15,18 @@ const ThemeContext = createContext<ThemeCtx>({
   setThemeId: () => {},
 });
 
+const ALL_AVAILABLE = [...ALL_THEMES, ...SEASONAL_THEMES];
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const systemScheme = useColorScheme();
   const [themeId, setThemeIdState] = useState('default');
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    loadData('themeId').then(id => { if (id) setThemeIdState(id); });
+    loadData('themeId').then(id => {
+      if (id) setThemeIdState(id);
+      setLoaded(true);
+    });
   }, []);
 
   const setThemeId = useCallback((id: string) => {
@@ -26,7 +34,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     saveData('themeId', id);
   }, []);
 
-  const theme = ALL_THEMES.find(t => t.id === themeId) ?? DEFAULT_THEME;
+  let theme = ALL_AVAILABLE.find(t => t.id === themeId) ?? DEFAULT_THEME;
+
+  // Auto dark mode: if user hasn't explicitly chosen a theme and system is dark
+  if (loaded && themeId === 'default' && systemScheme === 'dark') {
+    theme = DARK_THEME;
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, themeId, setThemeId }}>

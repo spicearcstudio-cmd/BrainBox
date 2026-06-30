@@ -8,12 +8,16 @@ import { initSound } from './services/soundManager';
 import { markDailyChallengeCompleted } from './services/dailyChallenge';
 import { getParentalState, recordGameForParental } from './services/parentalControl';
 import AchievementToast from './components/shared/AchievementToast';
+import SplashOverlay from './components/shared/SplashOverlay';
+import OnboardingOverlay, { shouldShowOnboarding } from './components/shared/OnboardingOverlay';
 import HomeScreen from './screens/HomeScreen';
 import GamePickerScreen from './screens/GamePickerScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import StatsScreen from './screens/StatsScreen';
 import DailyChallengeScreen from './screens/DailyChallengeScreen';
 import AchievementsScreen from './screens/AchievementsScreen';
+import HowToPlayScreen from './screens/HowToPlayScreen';
+import WeeklyRecapScreen from './screens/WeeklyRecapScreen';
 import DotsAndBoxesScreen from './screens/DotsAndBoxesScreen';
 import TicTacToeScreen from './screens/TicTacToeScreen';
 import ConnectFourScreen from './screens/ConnectFourScreen';
@@ -25,21 +29,30 @@ import Twenty48Screen from './screens/Twenty48Screen';
 type Screen =
   | { type: 'home' }
   | { type: 'picker'; gameId: GameId }
-  | { type: 'game'; gameId: GameId; diff: DifficultyOption; twoPlayer: boolean; isDaily: boolean }
+  | { type: 'game'; gameId: GameId; diff: DifficultyOption; twoPlayer: boolean; isDaily: boolean; timed?: number }
   | { type: 'settings' }
   | { type: 'stats' }
   | { type: 'daily' }
-  | { type: 'achievements' };
+  | { type: 'achievements' }
+  | { type: 'howtoplay'; gameId?: string }
+  | { type: 'weekly' };
 
 function Navigator() {
   const { theme } = useTheme();
   const [screen, setScreen] = useState<Screen>({ type: 'home' });
+  const [showSplash, setShowSplash] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  useEffect(() => { initSound(); }, []);
+  useEffect(() => {
+    initSound();
+    shouldShowOnboarding().then(show => {
+      if (show) setShowOnboarding(true);
+    });
+  }, []);
 
   const goHome = () => setScreen({ type: 'home' });
 
-  const startGame = async (gameId: GameId, diff: DifficultyOption, twoPlayer: boolean, isDaily: boolean) => {
+  const startGame = async (gameId: GameId, diff: DifficultyOption, twoPlayer: boolean, isDaily: boolean, timed?: number) => {
     const state = await getParentalState();
     if (!state.canPlay) {
       Alert.alert(
@@ -50,20 +63,14 @@ function Navigator() {
       return;
     }
     await recordGameForParental();
-    setScreen({ type: 'game', gameId, diff, twoPlayer, isDaily });
+    setScreen({ type: 'game', gameId, diff, twoPlayer, isDaily, timed });
   };
 
-  if (screen.type === 'settings') {
-    return <SettingsScreen onBack={goHome} />;
-  }
-
-  if (screen.type === 'stats') {
-    return <StatsScreen onBack={goHome} />;
-  }
-
-  if (screen.type === 'achievements') {
-    return <AchievementsScreen onBack={goHome} />;
-  }
+  if (screen.type === 'settings') return <SettingsScreen onBack={goHome} />;
+  if (screen.type === 'stats') return <StatsScreen onBack={goHome} />;
+  if (screen.type === 'achievements') return <AchievementsScreen onBack={goHome} />;
+  if (screen.type === 'howtoplay') return <HowToPlayScreen onBack={goHome} initialGameId={screen.gameId} />;
+  if (screen.type === 'weekly') return <WeeklyRecapScreen onBack={goHome} />;
 
   if (screen.type === 'daily') {
     return (
@@ -79,7 +86,7 @@ function Navigator() {
     return (
       <GamePickerScreen
         game={game}
-        onPlay={(diff, twoPlayer) => startGame(screen.gameId, diff, twoPlayer, false)}
+        onPlay={(diff, twoPlayer, timed) => startGame(screen.gameId, diff, twoPlayer, false, timed)}
         onBack={goHome}
       />
     );
@@ -103,13 +110,19 @@ function Navigator() {
   }
 
   return (
-    <HomeScreen
-      onSelectGame={(id) => setScreen({ type: 'picker', gameId: id })}
-      onSettings={() => setScreen({ type: 'settings' })}
-      onStats={() => setScreen({ type: 'stats' })}
-      onDaily={() => setScreen({ type: 'daily' })}
-      onAchievements={() => setScreen({ type: 'achievements' })}
-    />
+    <>
+      <HomeScreen
+        onSelectGame={(id) => setScreen({ type: 'picker', gameId: id })}
+        onSettings={() => setScreen({ type: 'settings' })}
+        onStats={() => setScreen({ type: 'stats' })}
+        onDaily={() => setScreen({ type: 'daily' })}
+        onAchievements={() => setScreen({ type: 'achievements' })}
+        onHowToPlay={() => setScreen({ type: 'howtoplay' })}
+        onWeeklyRecap={() => setScreen({ type: 'weekly' })}
+      />
+      {showSplash && <SplashOverlay onDone={() => setShowSplash(false)} />}
+      {!showSplash && showOnboarding && <OnboardingOverlay onComplete={() => setShowOnboarding(false)} />}
+    </>
   );
 }
 
@@ -117,7 +130,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <PremiumProvider>
-        <StatusBar style="dark" />
+        <StatusBar style="auto" />
         <Navigator />
         <AchievementToast />
       </PremiumProvider>
