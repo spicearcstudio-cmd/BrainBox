@@ -16,8 +16,8 @@ const PremiumContext = createContext<PremiumCtx>({
   restore: async () => {},
 });
 
-async function loadIAP(): Promise<any | null> {
-  try { return await import(/* webpackIgnore: true */ 'react-native-iap' as any); } catch { return null; }
+function loadIAP(): any | null {
+  try { return require('react-native-iap'); } catch { return null; }
 }
 
 export function PremiumProvider({ children }: { children: React.ReactNode }) {
@@ -25,11 +25,12 @@ export function PremiumProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     loadData('premium').then(val => { if (val === 'true') setIsPremium(true); });
-    loadIAP().then(iap => { if (iap) iap.initConnection().catch(() => {}); });
+    const iap = loadIAP();
+    if (iap) iap.initConnection().catch(() => {});
   }, []);
 
   const purchase = useCallback(async () => {
-    const RNIap = await loadIAP();
+    const RNIap = loadIAP();
     if (!RNIap) { Alert.alert('Not Available', 'In-app purchases are not available on this device.'); return; }
     try {
       const products = await RNIap.fetchProducts({ skus: [PREMIUM_SKU] });
@@ -50,7 +51,7 @@ export function PremiumProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const restore = useCallback(async () => {
-    const RNIap = await loadIAP();
+    const RNIap = loadIAP();
     if (!RNIap) { Alert.alert('Not Available', 'In-app purchases are not available on this device.'); return; }
     try {
       const purchases = await RNIap.getAvailablePurchases();

@@ -32,13 +32,13 @@ export function shouldShowBanner(isPremium: boolean): boolean {
   return !isPremium;
 }
 
-async function loadGMA(): Promise<any | null> {
-  try { return await import(/* webpackIgnore: true */ 'react-native-google-mobile-ads' as any); } catch { return null; }
+function loadGMA(): any | null {
+  try { return require('react-native-google-mobile-ads'); } catch { return null; }
 }
 
 export async function showInterstitialAd(isPremium: boolean): Promise<void> {
   if (isPremium || !shouldShowInterstitial(isPremium)) return;
-  const gma = await loadGMA();
+  const gma = loadGMA();
   if (!gma) return;
   try {
     const ad = gma.InterstitialAd.createForAdRequest(INTERSTITIAL_ID);
@@ -53,7 +53,7 @@ export async function showInterstitialAd(isPremium: boolean): Promise<void> {
 }
 
 export async function showRewardedAd(): Promise<boolean> {
-  const gma = await loadGMA();
+  const gma = loadGMA();
   if (!gma) return false;
   try {
     const ad = gma.RewardedAd.createForAdRequest(REWARDED_ID);
