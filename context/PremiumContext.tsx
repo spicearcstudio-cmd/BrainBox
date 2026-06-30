@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { Platform, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import { loadData, saveData } from '../services/storage';
 
 const PREMIUM_SKU = 'brainbox_premium';
@@ -16,36 +16,29 @@ const PremiumContext = createContext<PremiumCtx>({
   restore: async () => {},
 });
 
+async function loadIAP(): Promise<any | null> {
+  try { return await import(/* webpackIgnore: true */ 'react-native-iap' as any); } catch { return null; }
+}
+
 export function PremiumProvider({ children }: { children: React.ReactNode }) {
   const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     loadData('premium').then(val => { if (val === 'true') setIsPremium(true); });
-    initIAP();
+    loadIAP().then(iap => { if (iap) iap.initConnection().catch(() => {}); });
   }, []);
 
-  const initIAP = async () => {
-    try {
-      const RNIap = await import('react-native-iap');
-      await RNIap.initConnection();
-    } catch {
-      // IAP not available (e.g. dev builds, web)
-    }
-  };
-
   const purchase = useCallback(async () => {
+    const RNIap = await loadIAP();
+    if (!RNIap) { Alert.alert('Not Available', 'In-app purchases are not available on this device.'); return; }
     try {
-      const RNIap = await import('react-native-iap');
       const products = await RNIap.fetchProducts({ skus: [PREMIUM_SKU] });
       if (!products || products.length === 0) {
         Alert.alert('Not Available', 'Premium is not available right now. Please try again later.');
         return;
       }
       await RNIap.requestPurchase({
-        request: {
-          apple: { sku: PREMIUM_SKU },
-          google: { skus: [PREMIUM_SKU] },
-        },
+        request: { apple: { sku: PREMIUM_SKU }, google: { skus: [PREMIUM_SKU] } },
         type: 'in-app',
       });
       setIsPremium(true);
@@ -57,10 +50,11 @@ export function PremiumProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const restore = useCallback(async () => {
+    const RNIap = await loadIAP();
+    if (!RNIap) { Alert.alert('Not Available', 'In-app purchases are not available on this device.'); return; }
     try {
-      const RNIap = await import('react-native-iap');
       const purchases = await RNIap.getAvailablePurchases();
-      const hasPremium = purchases.some(p => p.productId === PREMIUM_SKU);
+      const hasPremium = purchases.some((p: any) => p.productId === PREMIUM_SKU);
       if (hasPremium) {
         setIsPremium(true);
         await saveData('premium', 'true');

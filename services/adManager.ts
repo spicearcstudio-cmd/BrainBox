@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 
-// Test ad unit IDs from Google (replace with your real IDs before production release)
 const BANNER_ID = Platform.select({
   android: 'ca-app-pub-3940256099942544/6300978111',
   ios: 'ca-app-pub-3940256099942544/2934735716',
@@ -33,32 +32,35 @@ export function shouldShowBanner(isPremium: boolean): boolean {
   return !isPremium;
 }
 
+async function loadGMA(): Promise<any | null> {
+  try { return await import(/* webpackIgnore: true */ 'react-native-google-mobile-ads' as any); } catch { return null; }
+}
+
 export async function showInterstitialAd(isPremium: boolean): Promise<void> {
-  if (isPremium) return;
-  if (!shouldShowInterstitial(isPremium)) return;
+  if (isPremium || !shouldShowInterstitial(isPremium)) return;
+  const gma = await loadGMA();
+  if (!gma) return;
   try {
-    const { InterstitialAd, AdEventType } = await import('react-native-google-mobile-ads');
-    const ad = InterstitialAd.createForAdRequest(INTERSTITIAL_ID);
+    const ad = gma.InterstitialAd.createForAdRequest(INTERSTITIAL_ID);
     return new Promise<void>((resolve) => {
-      ad.addAdEventListener(AdEventType.LOADED, () => ad.show());
-      ad.addAdEventListener(AdEventType.CLOSED, () => resolve());
-      ad.addAdEventListener(AdEventType.ERROR, () => resolve());
+      ad.addAdEventListener(gma.AdEventType.LOADED, () => ad.show());
+      ad.addAdEventListener(gma.AdEventType.CLOSED, () => resolve());
+      ad.addAdEventListener(gma.AdEventType.ERROR, () => resolve());
       ad.load();
       setTimeout(resolve, 5000);
     });
-  } catch {
-    // Ad SDK not available
-  }
+  } catch { /* Ad SDK error */ }
 }
 
 export async function showRewardedAd(): Promise<boolean> {
+  const gma = await loadGMA();
+  if (!gma) return false;
   try {
-    const { RewardedAd, RewardedAdEventType } = await import('react-native-google-mobile-ads');
-    const ad = RewardedAd.createForAdRequest(REWARDED_ID);
+    const ad = gma.RewardedAd.createForAdRequest(REWARDED_ID);
     return new Promise<boolean>((resolve) => {
-      ad.addAdEventListener(RewardedAdEventType.LOADED, () => ad.show());
-      ad.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => resolve(true));
-      ad.addAdEventListener('closed' as any, () => resolve(false));
+      ad.addAdEventListener(gma.RewardedAdEventType.LOADED, () => ad.show());
+      ad.addAdEventListener(gma.RewardedAdEventType.EARNED_REWARD, () => resolve(true));
+      ad.addAdEventListener('closed', () => resolve(false));
       ad.load();
       setTimeout(() => resolve(false), 10000);
     });
