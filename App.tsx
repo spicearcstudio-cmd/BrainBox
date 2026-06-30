@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { PremiumProvider } from './context/PremiumContext';
 import { GameId, getGameById, DifficultyOption } from './constants/games';
 import { initSound } from './services/soundManager';
 import { markDailyChallengeCompleted } from './services/dailyChallenge';
+import { getParentalState, recordGameForParental } from './services/parentalControl';
 import HomeScreen from './screens/HomeScreen';
 import GamePickerScreen from './screens/GamePickerScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -32,6 +34,20 @@ function Navigator() {
 
   const goHome = () => setScreen({ type: 'home' });
 
+  const startGame = async (gameId: GameId, diff: DifficultyOption, twoPlayer: boolean, isDaily: boolean) => {
+    const state = await getParentalState();
+    if (!state.canPlay) {
+      Alert.alert(
+        'Daily Limit Reached',
+        `You\u2019ve played ${state.gamesPlayedToday} games today. The limit is ${state.dailyLimit}.\n\nCome back tomorrow!`,
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+    await recordGameForParental();
+    setScreen({ type: 'game', gameId, diff, twoPlayer, isDaily });
+  };
+
   if (screen.type === 'settings') {
     return <SettingsScreen onBack={goHome} />;
   }
@@ -43,7 +59,7 @@ function Navigator() {
   if (screen.type === 'daily') {
     return (
       <DailyChallengeScreen
-        onPlay={(gameId, diff, isDaily) => setScreen({ type: 'game', gameId: gameId as GameId, diff, twoPlayer: false, isDaily })}
+        onPlay={(gameId, diff, isDaily) => startGame(gameId as GameId, diff, false, isDaily)}
         onBack={goHome}
       />
     );
@@ -54,7 +70,7 @@ function Navigator() {
     return (
       <GamePickerScreen
         game={game}
-        onPlay={(diff, twoPlayer) => setScreen({ type: 'game', gameId: screen.gameId, diff, twoPlayer, isDaily: false })}
+        onPlay={(diff, twoPlayer) => startGame(screen.gameId, diff, twoPlayer, false)}
         onBack={goHome}
       />
     );

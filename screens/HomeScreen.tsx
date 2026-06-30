@@ -4,6 +4,8 @@ import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
 import { GAMES, GameId } from '../constants/games';
 import { getDailyChallenge, isDailyChallengeCompleted } from '../services/dailyChallenge';
+import { getParentalState } from '../services/parentalControl';
+import AnimatedScreen from '../components/shared/AnimatedScreen';
 
 interface Props {
   onSelectGame: (id: GameId) => void;
@@ -16,14 +18,17 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily 
   const { theme: t } = useTheme();
   const { isPremium } = usePremium();
   const [dailyDone, setDailyDone] = useState(false);
+  const [remaining, setRemaining] = useState<number | null>(null);
   const daily = getDailyChallenge();
 
   useEffect(() => {
     isDailyChallengeCompleted().then(setDailyDone);
+    getParentalState().then(s => { if (s.enabled) setRemaining(s.remaining); });
   }, []);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
+      <AnimatedScreen>
       <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? 44 : 8 }]}>
         <Pressable onPress={onStats} style={styles.iconBtn}>
           <Text style={{ fontSize: 22 }}>{'\uD83D\uDCCA'}</Text>
@@ -38,6 +43,12 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily 
       </View>
 
       <Text style={[styles.subtitle, { color: t.textSec }]}>Classic Strategy Games</Text>
+
+      {remaining !== null && (
+        <View style={[styles.limitBanner, { backgroundColor: t.gold + '20' }]}>
+          <Text style={[styles.limitText, { color: t.gold }]}>{'\uD83D\uDD12'} {remaining} games remaining today</Text>
+        </View>
+      )}
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Pressable
@@ -81,6 +92,7 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily 
           ))}
         </View>
       </ScrollView>
+      </AnimatedScreen>
     </SafeAreaView>
   );
 }
@@ -108,4 +120,6 @@ const styles = StyleSheet.create({
   icon: { fontSize: 26, fontWeight: '800' },
   gameName: { fontSize: 16, fontWeight: '800', marginBottom: 4 },
   gameDesc: { fontSize: 12, fontWeight: '500', lineHeight: 16 },
+  limitBanner: { marginHorizontal: 16, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, alignItems: 'center', marginBottom: 8 },
+  limitText: { fontSize: 13, fontWeight: '700' },
 });

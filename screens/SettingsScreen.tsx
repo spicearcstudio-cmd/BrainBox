@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, SafeAreaView, Alert, Platform, Switch } from 'react-native';
+import { View, Text, Pressable, StyleSheet, SafeAreaView, Alert, Platform, Switch, TextInput, ScrollView } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
 import { ALL_THEMES } from '../constants/colors';
 import { isSoundEnabled, setSoundEnabled, isHapticEnabled, setHapticEnabled, initSound } from '../services/soundManager';
+import { ParentalState, getParentalState, setParentalEnabled, setDailyLimit, PARENTAL_MIN_GAMES } from '../services/parentalControl';
 
 interface Props { onBack: () => void }
 
@@ -12,22 +13,41 @@ export default function SettingsScreen({ onBack }: Props) {
   const { isPremium, purchase, restore } = usePremium();
   const [sound, setSound] = useState(true);
   const [haptic, setHaptic] = useState(true);
+  const [parental, setParental] = useState<ParentalState | null>(null);
+  const [limitInput, setLimitInput] = useState('');
 
   useEffect(() => {
     initSound().then(() => {
       setSound(isSoundEnabled());
       setHaptic(isHapticEnabled());
     });
+    getParentalState().then(s => {
+      setParental(s);
+      setLimitInput(String(s.dailyLimit));
+    });
   }, []);
 
-  const toggleSound = (val: boolean) => {
-    setSound(val);
-    setSoundEnabled(val);
+  const toggleSound = (val: boolean) => { setSound(val); setSoundEnabled(val); };
+  const toggleHaptic = (val: boolean) => { setHaptic(val); setHapticEnabled(val); };
+
+  const toggleParental = async (val: boolean) => {
+    await setParentalEnabled(val);
+    const s = await getParentalState();
+    setParental(s);
+    setLimitInput(String(s.dailyLimit));
   };
 
-  const toggleHaptic = (val: boolean) => {
-    setHaptic(val);
-    setHapticEnabled(val);
+  const handleLimitChange = async () => {
+    const num = parseInt(limitInput, 10);
+    if (isNaN(num) || num < PARENTAL_MIN_GAMES) {
+      Alert.alert('Invalid Limit', `Minimum is ${PARENTAL_MIN_GAMES} games per day.`);
+      setLimitInput(String(parental?.dailyLimit ?? PARENTAL_MIN_GAMES));
+      return;
+    }
+    await setDailyLimit(num);
+    const s = await getParentalState();
+    setParental(s);
+    Alert.alert('Limit Updated', `New limit of ${num} games will take effect from tomorrow.`);
   };
 
   const handlePurchase = async () => {
@@ -43,7 +63,7 @@ export default function SettingsScreen({ onBack }: Props) {
         <View style={{ width: 50 }} />
       </View>
 
-      <View style={styles.content}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {!isPremium && (
           <View style={[styles.premCard, { backgroundColor: t.surface, borderColor: t.gold }]}>
             <Text style={[styles.premTitle, { color: t.gold }]}>Go Premium</Text>
@@ -68,6 +88,41 @@ export default function SettingsScreen({ onBack }: Props) {
             <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDCF3'} Haptic Feedback</Text>
             <Switch value={haptic} onValueChange={toggleHaptic} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
           </View>
+        </View>
+
+        <Text style={[styles.sectionLabel, { color: t.textSec }]}>PARENTAL CONTROLS</Text>
+        <View style={[styles.toggleCard, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+          <View style={styles.toggleRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDD12'} Daily Game Limit</Text>
+              <Text style={[styles.toggleHint, { color: t.textSec }]}>Restrict games per day</Text>
+            </View>
+            <Switch value={parental?.enabled ?? false} onValueChange={toggleParental} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
+          </View>
+          {parental?.enabled && (
+            <>
+              <View style={[styles.divider, { backgroundColor: t.cardBorder }]} />
+              <View style={styles.limitSection}>
+                <Text style={[styles.limitLabel, { color: t.text }]}>Max games per day (min {PARENTAL_MIN_GAMES})</Text>
+                <View style={styles.limitRow}>
+                  <TextInput
+                    style={[styles.limitInput, { color: t.text, borderColor: t.cardBorder, backgroundColor: t.surfaceAlt }]}
+                    value={limitInput}
+                    onChangeText={setLimitInput}
+                    keyboardType="number-pad"
+                    maxLength={4}
+                  />
+                  <Pressable onPress={handleLimitChange} style={[styles.limitBtn, { backgroundColor: t.accent }]}>
+                    <Text style={styles.limitBtnText}>Set</Text>
+                  </Pressable>
+                </View>
+                <Text style={[styles.limitNote, { color: t.textSec }]}>
+                  Today: {parental.gamesPlayedToday}/{parental.dailyLimit} games played
+                  {parental.pendingLimit !== null ? `\nNew limit of ${parental.pendingLimit} starts tomorrow` : ''}
+                </Text>
+              </View>
+            </>
+          )}
         </View>
 
         <Text style={[styles.sectionLabel, { color: t.textSec }]}>THEME</Text>
@@ -99,7 +154,9 @@ export default function SettingsScreen({ onBack }: Props) {
             <Text style={[styles.statusDesc, { color: t.textSec }]}>No ads {'\u2022'} Offline play {'\u2022'} All themes</Text>
           </View>
         )}
-      </View>
+
+        <View style={{ height: 40 }} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -120,7 +177,15 @@ const styles = StyleSheet.create({
   toggleCard: { borderRadius: 16, borderWidth: 1.5, marginBottom: 24, overflow: 'hidden' },
   toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 },
   toggleLabel: { fontSize: 15, fontWeight: '600' },
+  toggleHint: { fontSize: 12, marginTop: 2 },
   divider: { height: 1 },
+  limitSection: { paddingHorizontal: 16, paddingVertical: 14 },
+  limitLabel: { fontSize: 14, fontWeight: '600', marginBottom: 10 },
+  limitRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+  limitInput: { flex: 1, borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontSize: 18, fontWeight: '700', textAlign: 'center' },
+  limitBtn: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 12 },
+  limitBtnText: { color: '#fff', fontSize: 14, fontWeight: '800' },
+  limitNote: { fontSize: 12, marginTop: 10, lineHeight: 18 },
   themeRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', marginBottom: 24 },
   themeBtn: { paddingVertical: 16, paddingHorizontal: 20, borderRadius: 16, alignItems: 'center', minWidth: 80 },
   themeName: { fontSize: 14, fontWeight: '700' },

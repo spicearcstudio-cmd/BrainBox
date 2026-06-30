@@ -32,6 +32,8 @@ export default function GameOverModal({
   const { isPremium } = usePremium();
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.85)).current;
+  const shakeX = useRef(new Animated.Value(0)).current;
+  const emojiScale = useRef(new Animated.Value(0)).current;
   const processed = useRef(false);
 
   useEffect(() => {
@@ -65,11 +67,27 @@ export default function GameOverModal({
       Animated.parallel([
         Animated.timing(opacity, { toValue: 1, duration: 250, useNativeDriver: true }),
         Animated.spring(scale, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
-      ]).start();
+      ]).start(() => {
+        // Emoji bounce-in after card appears
+        Animated.spring(emojiScale, { toValue: 1, tension: 100, friction: 6, useNativeDriver: true }).start();
+
+        // Shake on loss
+        if (result === 'lose') {
+          Animated.sequence([
+            Animated.timing(shakeX, { toValue: 10, duration: 50, useNativeDriver: true }),
+            Animated.timing(shakeX, { toValue: -10, duration: 50, useNativeDriver: true }),
+            Animated.timing(shakeX, { toValue: 8, duration: 50, useNativeDriver: true }),
+            Animated.timing(shakeX, { toValue: -8, duration: 50, useNativeDriver: true }),
+            Animated.timing(shakeX, { toValue: 0, duration: 50, useNativeDriver: true }),
+          ]).start();
+        }
+      });
     } else if (!visible) {
       processed.current = false;
       opacity.setValue(0);
       scale.setValue(0.85);
+      shakeX.setValue(0);
+      emojiScale.setValue(0);
     }
   }, [visible]);
 
@@ -90,11 +108,14 @@ export default function GameOverModal({
 
   const color = titleColor ?? t.accent;
 
+  const resultEmoji = result === 'win' ? '\uD83C\uDF89' : result === 'lose' ? '\uD83D\uDE14' : '\uD83E\uDD1D';
+
   return (
     <>
       <ConfettiOverlay visible={isWin} />
       <Animated.View style={[styles.overlay, { backgroundColor: t.overlay, opacity }]}>
-        <Animated.View style={[styles.card, { backgroundColor: t.surface, borderColor: t.cardBorder, transform: [{ scale }] }]}>
+        <Animated.View style={[styles.card, { backgroundColor: t.surface, borderColor: t.cardBorder, transform: [{ scale }, { translateX: shakeX }] }]}>
+          <Animated.Text style={[styles.emoji, { transform: [{ scale: emojiScale }] }]}>{resultEmoji}</Animated.Text>
           {isDaily && <Text style={[styles.dailyBadge, { color: t.gold }]}>{'\uD83C\uDFC6'} DAILY CHALLENGE</Text>}
           <Text style={[styles.title, { color }]}>{title}</Text>
           <Text style={[styles.sub, { color: t.textSec }]}>{subtitle}</Text>
@@ -134,6 +155,7 @@ export default function GameOverModal({
 const styles = StyleSheet.create({
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: 100 },
   card: { borderRadius: 24, padding: 28, alignItems: 'center', width: '85%', borderWidth: 1, elevation: 8, shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 20, shadowOffset: { width: 0, height: 8 } },
+  emoji: { fontSize: 48, marginBottom: 8 },
   dailyBadge: { fontSize: 13, fontWeight: '900', letterSpacing: 2, marginBottom: 8 },
   title: { fontSize: 28, fontWeight: '900', marginBottom: 4 },
   sub: { fontSize: 18, fontWeight: '600', marginBottom: 20 },
