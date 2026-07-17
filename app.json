@@ -21,6 +21,9 @@
       },
       "permissions": [
         "POST_NOTIFICATIONS"
+      ],
+      "blockedPermissions": [
+        "FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ]
     },
     "web": {
