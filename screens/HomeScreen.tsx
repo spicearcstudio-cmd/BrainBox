@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, SafeAreaView, ScrollView, Platform, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Pressable, StyleSheet, SafeAreaView, ScrollView, Platform, Alert, Animated, Easing } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
 import { GAMES, GameId, GameInfo } from '../constants/games';
@@ -66,15 +66,15 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
       <AnimatedScreen>
       <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? 44 : 8 }]}>
-        <Pressable onPress={onAvatar} style={styles.avatarBtn} accessibilityRole="button" accessibilityLabel="Edit your profile">
-          <Text style={{ fontSize: 26 }}>{playerAvatar}</Text>
+        <Pressable onPress={onAvatar} style={[styles.avatarBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="Edit your profile">
+          <Text style={{ fontSize: 22 }}>{playerAvatar}</Text>
         </Pressable>
         <View style={styles.titleRow}>
-          <Text style={[styles.title, { color: t.text }]} accessibilityRole="header">Brain Box</Text>
+          <Text style={[styles.title, { color: t.text }]} accessibilityRole="header">{'\uD83E\uDDE0'} Brain Box</Text>
           {isPremium && <View style={styles.proBadge}><Text style={styles.proText}>PRO</Text></View>}
         </View>
-        <Pressable onPress={onSettings} style={styles.iconBtn} accessibilityRole="button" accessibilityLabel="Settings">
-          <Text style={{ fontSize: 22 }}>{'\u2699'}</Text>
+        <Pressable onPress={onSettings} style={[styles.settingsBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="Settings">
+          <Text style={{ fontSize: 18 }}>{'\u2699\uFE0F'}</Text>
         </Pressable>
       </View>
 
@@ -202,8 +202,9 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
           )}
         </Pressable>
 
+        <Text style={[styles.sectionTitle, { color: t.text }]}>{'\uD83C\uDFAE'} Games</Text>
         <View style={styles.grid}>
-          {GAMES.map(game => {
+          {GAMES.map((game, idx) => {
             const locked = game.unlockLevel != null && (progression?.level ?? 1) < game.unlockLevel;
             return (
               <Pressable
@@ -219,20 +220,28 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
                 accessibilityState={{ disabled: locked }}
                 style={({ pressed }) => [
                   styles.card,
-                  { backgroundColor: t.card, borderColor: locked ? t.gold : t.cardBorder, transform: [{ scale: pressed && !locked ? 0.96 : 1 }] },
+                  { backgroundColor: t.card, borderColor: locked ? t.gold + '60' : t.cardBorder, transform: [{ scale: pressed && !locked ? 0.95 : 1 }] },
                 ]}
               >
+                <View style={[styles.cardAccent, { backgroundColor: locked ? t.gold + '40' : game.color }]} />
                 {locked && (
                   <View style={styles.lockOverlay}>
-                    <Text style={styles.lockEmoji}>{'\uD83D\uDD12'}</Text>
-                    <Text style={[styles.lockLevel, { color: t.gold }]}>Level {game.unlockLevel}</Text>
+                    <View style={[styles.lockBadge, { backgroundColor: t.gold + '30' }]}>
+                      <Text style={styles.lockEmoji}>{'\uD83D\uDD12'}</Text>
+                      <Text style={[styles.lockLevel, { color: t.gold }]}>Lv.{game.unlockLevel}</Text>
+                    </View>
                   </View>
                 )}
-                <View style={[styles.iconWrap, { backgroundColor: game.color + '18', opacity: locked ? 0.3 : 1 }]}>
+                <View style={[styles.iconWrap, { backgroundColor: game.color + '15', borderColor: game.color + '30', opacity: locked ? 0.3 : 1 }]}>
                   <Text style={[styles.icon, { color: game.color }]}>{game.icon}</Text>
                 </View>
-                <Text style={[styles.gameName, { color: t.text, opacity: locked ? 0.4 : 1 }]}>{game.name}</Text>
-                <Text style={[styles.gameDesc, { color: t.textSec, opacity: locked ? 0.4 : 1 }]}>{game.description}</Text>
+                <Text style={[styles.gameName, { color: t.text, opacity: locked ? 0.4 : 1 }]} numberOfLines={1}>{game.name}</Text>
+                <Text style={[styles.gameDesc, { color: t.textSec, opacity: locked ? 0.4 : 1 }]} numberOfLines={2}>{game.description}</Text>
+                {!locked && (
+                  <View style={[styles.playChip, { backgroundColor: game.color + '15' }]}>
+                    <Text style={[styles.playChipText, { color: game.color }]}>PLAY {'\u25B6'}</Text>
+                  </View>
+                )}
               </Pressable>
             );
           })}
@@ -246,49 +255,54 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 4 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  title: { fontSize: 28, fontWeight: '900', letterSpacing: 1 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  title: { fontSize: 26, fontWeight: '900', letterSpacing: 0.5 },
   proBadge: { backgroundColor: '#FFB300', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
-  proText: { color: '#fff', fontSize: 11, fontWeight: '900', letterSpacing: 1 },
-  iconBtn: { width: 40, alignItems: 'center' },
-  avatarBtn: { width: 40, alignItems: 'center' },
-  subtitle: { fontSize: 14, fontWeight: '600', textAlign: 'center', marginBottom: 8 },
-  scrollContent: { paddingHorizontal: 16, paddingBottom: 30 },
+  proText: { color: '#fff', fontSize: 10, fontWeight: '900', letterSpacing: 1 },
+  settingsBtn: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  avatarBtn: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
+  subtitle: { fontSize: 13, fontWeight: '600', textAlign: 'center', marginBottom: 8, letterSpacing: 1 },
+  scrollContent: { paddingHorizontal: 16, paddingBottom: 40 },
   xpSection: { marginBottom: 14 },
   statsRow: { flexDirection: 'row', gap: 10, marginTop: 10 },
-  miniStat: { flex: 1, borderRadius: 12, padding: 10, alignItems: 'center', borderWidth: 1 },
-  miniStatNum: { fontSize: 18, fontWeight: '900' },
-  miniStatLabel: { fontSize: 11, fontWeight: '600', marginTop: 2 },
+  miniStat: { flex: 1, borderRadius: 14, padding: 12, alignItems: 'center', borderWidth: 1, elevation: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
+  miniStatNum: { fontSize: 20, fontWeight: '900' },
+  miniStatLabel: { fontSize: 11, fontWeight: '600', marginTop: 2, letterSpacing: 0.5 },
   urgencyBanner: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 12 },
   urgencyEmoji: { fontSize: 24 },
   urgencyTitle: { fontSize: 14, fontWeight: '800' },
   urgencyDesc: { fontSize: 12, fontWeight: '500', marginTop: 2 },
-  dailyCard: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 18, borderWidth: 2, marginBottom: 16 },
+  dailyCard: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 18, borderWidth: 2, marginBottom: 16, elevation: 2, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
   dailyLeft: { marginRight: 12 },
   dailyCenter: { flex: 1 },
   dailyTitle: { fontSize: 16, fontWeight: '900', letterSpacing: 1 },
   dailyDesc: { fontSize: 12, fontWeight: '500', marginTop: 2 },
   dailyCheck: { width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
   dailyCheckText: { color: '#fff', fontSize: 14, fontWeight: '900' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14, justifyContent: 'center' },
-  card: { width: '45%', minWidth: 150, borderRadius: 20, padding: 18, borderWidth: 1.5, elevation: 3, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } },
-  iconWrap: { width: 52, height: 52, borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  icon: { fontSize: 26, fontWeight: '800' },
-  gameName: { fontSize: 16, fontWeight: '800', marginBottom: 4 },
-  gameDesc: { fontSize: 12, fontWeight: '500', lineHeight: 16 },
+  sectionTitle: { fontSize: 18, fontWeight: '900', marginBottom: 14, marginTop: 6, letterSpacing: 0.5 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'center' },
+  card: { width: '46%', minWidth: 150, borderRadius: 20, padding: 16, paddingTop: 20, borderWidth: 1, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
+  cardAccent: { position: 'absolute', top: 0, left: 0, right: 0, height: 4, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+  iconWrap: { width: 56, height: 56, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginBottom: 12, borderWidth: 1.5 },
+  icon: { fontSize: 28, fontWeight: '800' },
+  gameName: { fontSize: 15, fontWeight: '800', marginBottom: 3 },
+  gameDesc: { fontSize: 11, fontWeight: '500', lineHeight: 15 },
+  playChip: { marginTop: 10, paddingVertical: 6, paddingHorizontal: 14, borderRadius: 10, alignSelf: 'flex-start' },
+  playChipText: { fontSize: 11, fontWeight: '900', letterSpacing: 1.5 },
   lockOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10, justifyContent: 'center', alignItems: 'center', borderRadius: 20 },
-  lockEmoji: { fontSize: 28, marginBottom: 4 },
-  lockLevel: { fontSize: 12, fontWeight: '900', letterSpacing: 1 },
-  quickRow: { flexDirection: 'row', gap: 10, marginTop: 10 },
-  quickBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 10, borderRadius: 12, borderWidth: 1 },
-  quickIcon: { fontSize: 16 },
-  quickLabel: { fontSize: 12, fontWeight: '700' },
+  lockBadge: { alignItems: 'center', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 14 },
+  lockEmoji: { fontSize: 24, marginBottom: 4 },
+  lockLevel: { fontSize: 11, fontWeight: '900', letterSpacing: 1 },
+  quickRow: { flexDirection: 'row', gap: 8, marginTop: 10 },
+  quickBtn: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 10, paddingHorizontal: 6, borderRadius: 14, borderWidth: 1, elevation: 1, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3, shadowOffset: { width: 0, height: 1 } },
+  quickIcon: { fontSize: 18 },
+  quickLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
   limitBanner: { marginHorizontal: 16, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12, alignItems: 'center', marginBottom: 8 },
   limitText: { fontSize: 13, fontWeight: '700' },
-  tournamentCard: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 10, gap: 12 },
+  tournamentCard: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 10, gap: 12, elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } },
   tournamentTitle: { fontSize: 14, fontWeight: '800' },
   tournamentDesc: { fontSize: 12, fontWeight: '500', marginTop: 2 },
-  powerUpClaim: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 10, gap: 12 },
+  powerUpClaim: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 16, borderWidth: 1.5, marginBottom: 10, gap: 12, elevation: 2, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } },
   powerUpTitle: { fontSize: 14, fontWeight: '800' },
   powerUpDesc: { fontSize: 12, fontWeight: '500', marginTop: 2 },
 });

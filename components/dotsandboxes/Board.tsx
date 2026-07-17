@@ -9,9 +9,9 @@ interface Props {
   disabled: boolean;
 }
 
-const DOT = 12;
-const LINE_W = 5;
-const TOUCH = 34;
+const DOT = 14;
+const LINE_W = 6;
+const TOUCH = 36;
 
 export default function Board({ gameState, onLinePress, disabled }: Props) {
   const { width } = useWindowDimensions();
@@ -28,7 +28,7 @@ export default function Board({ gameState, onLinePress, disabled }: Props) {
     for (let c = 0; c < g - 1; c++) {
       const o = gameState.boxes.get(`box-${r}-${c}`);
       if (o) els.push(
-        <View key={`b${r}${c}`} style={{ position: 'absolute', left: pad + c * cell + DOT / 2, top: pad + r * cell + DOT / 2, width: cell - DOT, height: cell - DOT, backgroundColor: o === 'human' ? t.playerLight : t.aiLight, borderRadius: 6 }} />
+        <View key={`b${r}${c}`} style={{ position: 'absolute', left: pad + c * cell + DOT / 2, top: pad + r * cell + DOT / 2, width: cell - DOT, height: cell - DOT, backgroundColor: o === 'human' ? t.playerLight : t.aiLight, borderRadius: 8, borderWidth: 1, borderColor: o === 'human' ? t.player + '30' : t.ai + '30' }} />
       );
     }
 
@@ -59,7 +59,7 @@ export default function Board({ gameState, onLinePress, disabled }: Props) {
   for (let r = 0; r < g; r++)
     for (let c = 0; c < g; c++)
       els.push(
-        <View key={`d${r}${c}`} style={{ position: 'absolute', left: pad + c * cell - DOT / 2, top: pad + r * cell - DOT / 2, width: DOT, height: DOT, borderRadius: DOT / 2, backgroundColor: t.dot }} />
+        <View key={`d${r}${c}`} style={{ position: 'absolute', left: pad + c * cell - DOT / 2, top: pad + r * cell - DOT / 2, width: DOT, height: DOT, borderRadius: DOT / 2, backgroundColor: t.dot, elevation: 3, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 3, shadowOffset: { width: 0, height: 1 } }} />
       );
 
   return <View style={{ width: total, height: total, alignSelf: 'center' }}>{els}</View>;

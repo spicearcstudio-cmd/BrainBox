@@ -20,8 +20,15 @@ export default function ReversiBoard({ board, currentPlayer, onPress, disabled }
   const validMoves = disabled ? [] : getValidMoves(board, currentPlayer);
   const validSet = new Set(validMoves.map(([r, c]) => `${r},${c}`));
 
+  const isDark = t.statusBar === 'light';
+  const boardBg = isDark ? '#1A3A1A' : '#2E7D32';
+  const cellBorder = isDark ? '#0D2B0D' : '#1B5E20';
+  const darkPiece = isDark ? '#1A1A1A' : '#212121';
+  const lightPiece = isDark ? '#E8E8E8' : '#FAFAFA';
+  const hintColor = isDark ? 'rgba(100,255,100,0.25)' : 'rgba(255,255,255,0.3)';
+
   return (
-    <View style={[styles.board, { width: boardSize, height: boardSize, backgroundColor: '#2E7D32' }]}>
+    <View style={[styles.board, { width: boardSize, height: boardSize, backgroundColor: boardBg }]}>
       {board.map((row, r) =>
         row.map((cell, c) => {
           const isValid = validSet.has(`${r},${c}`);
@@ -33,7 +40,7 @@ export default function ReversiBoard({ board, currentPlayer, onPress, disabled }
                 styles.cell,
                 {
                   width: cellSize, height: cellSize,
-                  borderColor: '#1B5E20',
+                  borderColor: cellBorder,
                 },
               ]}
             >
@@ -44,18 +51,18 @@ export default function ReversiBoard({ board, currentPlayer, onPress, disabled }
                     width: cellSize * 0.78,
                     height: cellSize * 0.78,
                     borderRadius: cellSize * 0.39,
-                    backgroundColor: cell === 1 ? '#212121' : '#FAFAFA',
-                    borderColor: cell === 1 ? '#000' : '#CCC',
+                    backgroundColor: cell === 1 ? darkPiece : lightPiece,
+                    borderColor: cell === 1 ? '#000' : (isDark ? '#AAA' : '#CCC'),
                   },
                 ]} />
               )}
               {isValid && cell === 0 && (
                 <View style={[
-                  styles.hint,
                   {
                     width: cellSize * 0.3,
                     height: cellSize * 0.3,
                     borderRadius: cellSize * 0.15,
+                    backgroundColor: hintColor,
                   },
                 ]} />
               )}
@@ -68,8 +75,7 @@ export default function ReversiBoard({ board, currentPlayer, onPress, disabled }
 }
 
 const styles = StyleSheet.create({
-  board: { flexDirection: 'row', flexWrap: 'wrap', borderRadius: 8, overflow: 'hidden', alignSelf: 'center' },
+  board: { flexDirection: 'row', flexWrap: 'wrap', borderRadius: 12, overflow: 'hidden', alignSelf: 'center', elevation: 6, shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 12, shadowOffset: { width: 0, height: 5 } },
   cell: { borderWidth: 0.5, justifyContent: 'center', alignItems: 'center' },
-  piece: { borderWidth: 2, elevation: 3, shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 3, shadowOffset: { width: 0, height: 2 } },
-  hint: { backgroundColor: 'rgba(255,255,255,0.3)' },
+  piece: { borderWidth: 2, elevation: 4, shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
 });

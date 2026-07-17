@@ -40,7 +40,7 @@ export default function Board({ state, onDrop, disabled }: Props) {
 }
 
 const styles = StyleSheet.create({
-  board: { flexDirection: 'row', borderRadius: 16, borderWidth: 2, padding: 4, overflow: 'hidden' },
+  board: { flexDirection: 'row', borderRadius: 18, borderWidth: 2, padding: 6, overflow: 'hidden', elevation: 6, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
   slot: { justifyContent: 'center', alignItems: 'center' },
-  disc: { borderRadius: 999, elevation: 1, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 3, shadowOffset: { width: 0, height: 1 } },
+  disc: { borderRadius: 999, elevation: 3, shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
 });

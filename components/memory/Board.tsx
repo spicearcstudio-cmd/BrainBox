@@ -50,6 +50,6 @@ export default function Board({ state, onFlip }: Props) {
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
   cell: { justifyContent: 'center', alignItems: 'center', padding: 4 },
-  card: { borderRadius: 12, borderWidth: 2, justifyContent: 'center', alignItems: 'center', elevation: 2, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
+  card: { borderRadius: 14, borderWidth: 2, justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
   symbol: { fontWeight: '700' },
 });

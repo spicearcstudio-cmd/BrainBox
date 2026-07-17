@@ -31,9 +31,9 @@ export default function ScoreBar({ humanScore, aiScore, currentPlayer, gameOver,
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 12, gap: 12 },
-  card: { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 16, borderWidth: 2, elevation: 2, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } },
-  label: { fontSize: 12, fontWeight: '800', letterSpacing: 2 },
-  score: { fontSize: 32, fontWeight: '900' },
-  vs: { fontSize: 13, fontWeight: '700', letterSpacing: 1 },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 12, gap: 14 },
+  card: { flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 18, borderWidth: 2.5, elevation: 4, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } },
+  label: { fontSize: 11, fontWeight: '900', letterSpacing: 2.5 },
+  score: { fontSize: 36, fontWeight: '900', marginTop: 2 },
+  vs: { fontSize: 12, fontWeight: '800', letterSpacing: 1.5 },
 });
