@@ -70,7 +70,7 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
           <Text style={{ fontSize: 22 }}>{playerAvatar}</Text>
         </Pressable>
         <View style={styles.titleRow}>
-          <Text style={[styles.title, { color: t.text }]} accessibilityRole="header">{'\uD83E\uDDE0'} Brain Box</Text>
+          <Text style={[styles.title, { color: t.text }]} accessibilityRole="header">{'\uD83E\uDDE0'} Brainio</Text>
           {isPremium && <View style={styles.proBadge}><Text style={styles.proText}>PRO</Text></View>}
         </View>
         <Pressable onPress={onSettings} style={[styles.settingsBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="Settings">

@@ -173,7 +173,7 @@ export default function GameOverModal({
   const isWin = result === 'win';
   const shareMsg = isWin && stars === 3
     ? `\u2B50\u2B50\u2B50 Perfect game in ${gameName}! Can you beat that?\n${STORE_URL}`
-    : `${title} ${subtitle} in ${gameName} on Brain Box! Can you beat me?\n${STORE_URL}`;
+    : `${title} ${subtitle} in ${gameName} on Brainio! Can you beat me?\n${STORE_URL}`;
 
   const handleShare = async () => {
     try { await Share.share({ message: shareMsg }); } catch { /* cancelled */ }

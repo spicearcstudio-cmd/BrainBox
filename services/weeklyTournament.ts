@@ -160,7 +160,7 @@ export async function shareTournamentResults(): Promise<void> {
     s.completed ? '\u2B50'.repeat(s.stars) + '\u2606'.repeat(3 - s.stars) : '\u2796\u2796\u2796'
   ).join('\n');
 
-  const message = `\uD83C\uDFC6 Brain Box Weekly Tournament\nWeek: ${tournament.startDate} to ${tournament.endDate}\n\n${starStr}\n\nTotal: ${state.totalStars}/15 stars | ${state.completedCount}/5 completed\n\nCan you beat my score? Download Brain Box!`;
+  const message = `\uD83C\uDFC6 Brainio Weekly Tournament\nWeek: ${tournament.startDate} to ${tournament.endDate}\n\n${starStr}\n\nTotal: ${state.totalStars}/15 stars | ${state.completedCount}/5 completed\n\nCan you beat my score? Download Brainio!`;
 
   try {
     await Share.share({ message });

@@ -1,8 +1,8 @@
-# Google Play Store Listing — Brain Box
+# Google Play Store Listing — Brainio
 
 ## App Title (30 chars max)
 ```
-Brain Box: Strategy Games
+Brainio: Strategy Games
 ```
 
 ## Short Description (80 chars max)
@@ -14,7 +14,7 @@ Brain Box: Strategy Games
 ```
 🧠 Train your brain with 7 addictive classic strategy games — all in one app!
 
-Brain Box brings together the best classic puzzle and strategy games, beautifully designed with a cheerful modern interface. Challenge smart AI opponents with unique personalities, compete in weekly tournaments, or pass the phone for 2-player fun.
+Brainio brings together the best classic puzzle and strategy games, beautifully designed with a cheerful modern interface. Challenge smart AI opponents with unique personalities, compete in weekly tournaments, or pass the phone for 2-player fun.
 
 ━━━━━━━━━━━━━━━━━━━━
 🎮 7 CLASSIC GAMES
@@ -77,7 +77,7 @@ One purchase, yours forever:
 
 No internet required. No account needed. No data collected. Just pure classic gaming fun for all ages.
 
-Download Brain Box and start training your brain today! 🧠
+Download Brainio and start training your brain today! 🧠
 ```
 
 ## Category
@@ -113,7 +113,7 @@ https://spicearcstudio-cmd.github.io/BrainBox/
 1. Go to https://play.google.com/console
 2. Click **"Create app"**
 3. Fill in:
-   - **App name:** Brain Box: Strategy Games
+   - **App name:** Brainio: Strategy Games
    - **Default language:** English (United States)
    - **App or game:** Game
    - **Free or paid:** Free
@@ -123,7 +123,7 @@ https://spicearcstudio-cmd.github.io/BrainBox/
 1. Go to **Grow > Store presence > Main store listing**
 2. Fill in the **Short description** and **Full description** from above
 3. **App icon:** Upload the 512×512 icon (from `assets/icon.png`)
-4. **Feature graphic:** Create a 1024×500 banner image with "Brain Box" title and game icons
+4. **Feature graphic:** Create a 1024×500 banner image with "Brainio" title and game icons
 5. **Screenshots:** Upload at least 2 phone screenshots (1080×1920 or similar)
    - Take screenshots from the preview APK on your phone
    - Recommended: Home screen, a game in progress, daily challenge, settings
@@ -172,7 +172,7 @@ https://spicearcstudio-cmd.github.io/BrainBox/
 4. **Release name:** 2.0.0 (auto-filled)
 5. **Release notes:**
 ```
-🎉 Welcome to Brain Box 2.0!
+🎉 Welcome to Brainio 2.0!
 
 7 classic strategy & puzzle games in one app:
 • Dots & Boxes, Tic Tac Toe, Connect Four, Memory Match, Color Flood

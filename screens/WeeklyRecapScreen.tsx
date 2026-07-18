@@ -16,13 +16,13 @@ export default function WeeklyRecapScreen({ onBack }: Props) {
 
   const shareRecap = async () => {
     const msg = [
-      '\uD83E\uDDE0 My Brain Box Weekly Recap:',
+      '\uD83E\uDDE0 My Brainio Weekly Recap:',
       `\uD83C\uDFAE ${recap.gamesPlayed} games played`,
       `\uD83C\uDFC6 ${recap.gamesWon} wins (${recap.winRate}% win rate)`,
       `\u2B50 +${recap.xpEarned} XP earned`,
       `\uD83D\uDCCA Level ${recap.currentLevel} ${recap.currentTitle}`,
       '',
-      'Can you beat my stats? Download Brain Box!',
+      'Can you beat my stats? Download Brainio!',
       'https://play.google.com/store/apps/details?id=com.brainbox.games',
     ].join('\n');
     try { await Share.share({ message: msg }); } catch {}

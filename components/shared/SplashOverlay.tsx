@@ -29,7 +29,7 @@ export default function SplashOverlay({ onDone }: Props) {
     <Animated.View style={[styles.container, { opacity: containerOpacity }]}>
       <Animated.View style={{ transform: [{ scale: logoScale }], opacity: logoOpacity }}>
         <Text style={styles.icon}>{'\uD83E\uDDE0'}</Text>
-        <Text style={styles.title}>Brain Box</Text>
+        <Text style={styles.title}>Brainio</Text>
       </Animated.View>
       <Animated.Text style={[styles.subtitle, { opacity: subtitleOpacity }]}>
         Classic Strategy Games

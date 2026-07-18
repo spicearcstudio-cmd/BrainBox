@@ -6,11 +6,11 @@ const { width } = Dimensions.get('window');
 const ONBOARDING_KEY = 'onboarding_completed';
 
 const SLIDES = [
-  { emoji: '\uD83E\uDDE0', title: 'Welcome to Brain Box!', desc: '7 classic strategy games, all in one app. Play solo against AI or challenge a friend!' },
+  { emoji: '\uD83E\uDDE0', title: 'Welcome to Brainio!', desc: '7 classic strategy games, all in one app. Play solo against AI or challenge a friend!' },
   { emoji: '\uD83C\uDFC6', title: 'Daily Challenges', desc: 'A new unique puzzle every day. Build your streak and never miss a day!' },
   { emoji: '\u2B50', title: 'Level Up & Earn XP', desc: 'Every game earns XP. Level up from Newbie to Brain God and unlock bonus games along the way!' },
   { emoji: '\uD83C\uDFC5', title: 'Unlock Achievements', desc: 'Collect 18 badges by hitting milestones, perfecting games, and building streaks.' },
-  { emoji: '\uD83C\uDF89', title: 'Ready to play?', desc: 'Start with any game and have fun! Your Brain Box journey begins now.' },
+  { emoji: '\uD83C\uDF89', title: 'Ready to play?', desc: 'Start with any game and have fun! Your Brainio journey begins now.' },
 ];
 
 interface Props {
