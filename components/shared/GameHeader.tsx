@@ -31,7 +31,9 @@ export default function GameHeader({ title, onBack, showConfirmOnBack = true }: 
       <Pressable onPress={handleBack} style={[styles.backBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="Go back">
         <Text style={[styles.backText, { color: t.text }]}>{'\u2190'}</Text>
       </Pressable>
-      <Text style={[styles.title, { color: t.text }]} accessibilityRole="header">{title}</Text>
+      <View style={[styles.titlePill, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+        <Text style={[styles.title, { color: t.text }]} accessibilityRole="header">{title}</Text>
+      </View>
       <View style={styles.spacer} />
     </View>
   );
@@ -45,8 +47,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 6,
   },
-  backBtn: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', borderWidth: 1 },
+  backBtn: { width: 42, height: 42, borderRadius: 21, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderStyle: 'dashed' as any },
   backText: { fontSize: 20, fontWeight: '700' },
-  title: { fontSize: 18, fontWeight: '900', letterSpacing: 1.5 },
-  spacer: { width: 40 },
+  titlePill: { paddingVertical: 6, paddingHorizontal: 18, borderRadius: 16, borderWidth: 2, borderStyle: 'dashed' as any },
+  title: { fontSize: 16, fontWeight: '900', letterSpacing: 1 },
+  spacer: { width: 42 },
 });

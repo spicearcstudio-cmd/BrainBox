@@ -29,7 +29,8 @@ export default function Board({ state, onFlip }: Props) {
             <View style={[styles.card, {
               width: cardSize, height: cardSize,
               backgroundColor: state.matched[i] ? t.playerLight : show ? t.surface : t.player,
-              borderColor: state.matched[i] ? t.player : t.cardBorder,
+              borderColor: state.matched[i] ? t.player + '50' : t.cardBorder,
+              borderStyle: show ? ('dashed' as any) : 'solid',
             }]}>
               {show && (
                 <Text style={[styles.symbol, { fontSize: cardSize * 0.4, color: state.matched[i] ? t.player : t.text }]}>
@@ -50,6 +51,6 @@ export default function Board({ state, onFlip }: Props) {
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
   cell: { justifyContent: 'center', alignItems: 'center', padding: 4 },
-  card: { borderRadius: 14, borderWidth: 2, justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
+  card: { borderRadius: 16, borderWidth: 2, justifyContent: 'center', alignItems: 'center' },
   symbol: { fontWeight: '700' },
 });

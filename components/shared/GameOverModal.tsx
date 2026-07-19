@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Animated, Share, Linking } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Animated, Share, Linking, Easing } from 'react-native';
 import * as StoreReview from 'expo-store-review';
 import { useTheme } from '../../context/ThemeContext';
 import { usePremium } from '../../context/PremiumContext';
@@ -49,6 +49,7 @@ export default function GameOverModal({
   const scale = useRef(new Animated.Value(0.85)).current;
   const shakeX = useRef(new Animated.Value(0)).current;
   const emojiScale = useRef(new Animated.Value(0)).current;
+  const emojiRotate = useRef(new Animated.Value(0)).current;
   const processed = useRef(false);
 
   const [stars, setStars] = useState(0);
@@ -72,14 +73,12 @@ export default function GameOverModal({
         hapticNotification('warning');
       }
 
-      // Star rating
       let earnedStars = 0;
       if (gameId && result) {
         earnedStars = calculateStars(gameId, result, extraStats);
         setStars(earnedStars);
       }
 
-      // Close loss detection
       if (result === 'lose' && extraStats?.score !== undefined && extraStats?.opponentScore !== undefined) {
         const margin = extraStats.opponentScore - extraStats.score;
         if (margin <= 2) {
@@ -87,7 +86,6 @@ export default function GameOverModal({
         }
       }
 
-      // Record stats, XP, achievements
       if (gameId && result) {
         (async () => {
           const allStats = await recordResult(gameId, result, extraStats);
@@ -107,7 +105,6 @@ export default function GameOverModal({
             setTimeout(() => setShowLevelUp(true), 800);
           }
 
-          // Check achievements
           const prog = await getProgression();
           const stars3 = await getThreeStarCount();
           const gamesPerType: AchievementCheckData['gamesPerType'] = {};
@@ -142,9 +139,17 @@ export default function GameOverModal({
 
       Animated.parallel([
         Animated.timing(opacity, { toValue: 1, duration: 250, useNativeDriver: true }),
-        Animated.spring(scale, { toValue: 1, tension: 60, friction: 8, useNativeDriver: true }),
+        Animated.spring(scale, { toValue: 1, tension: 50, friction: 6, useNativeDriver: true }),
       ]).start(() => {
-        Animated.spring(emojiScale, { toValue: 1, tension: 100, friction: 6, useNativeDriver: true }).start();
+        Animated.parallel([
+          Animated.spring(emojiScale, { toValue: 1, tension: 80, friction: 5, useNativeDriver: true }),
+          Animated.sequence([
+            Animated.timing(emojiRotate, { toValue: 1, duration: 150, useNativeDriver: true }),
+            Animated.timing(emojiRotate, { toValue: -0.5, duration: 120, useNativeDriver: true }),
+            Animated.timing(emojiRotate, { toValue: 0, duration: 100, useNativeDriver: true }),
+          ]),
+        ]).start();
+
         if (result === 'lose') {
           Animated.sequence([
             Animated.timing(shakeX, { toValue: 10, duration: 50, useNativeDriver: true }),
@@ -161,6 +166,7 @@ export default function GameOverModal({
       scale.setValue(0.85);
       shakeX.setValue(0);
       emojiScale.setValue(0);
+      emojiRotate.setValue(0);
       setStars(0);
       setXpGain(null);
       setShowLevelUp(false);
@@ -188,6 +194,7 @@ export default function GameOverModal({
   const color = titleColor ?? t.accent;
   const resultEmoji = result === 'win' ? '\uD83C\uDF89' : result === 'lose' ? '\uD83D\uDE14' : '\uD83E\uDD1D';
   const displaySubtitle = closeLossMsg ?? subtitle;
+  const emojiRot = emojiRotate.interpolate({ inputRange: [-1, 0, 1], outputRange: ['-15deg', '0deg', '15deg'] });
 
   return (
     <>
@@ -200,7 +207,7 @@ export default function GameOverModal({
       />
       <Animated.View style={[styles.overlay, { backgroundColor: t.overlay, opacity }]}>
         <Animated.View style={[styles.card, { backgroundColor: t.surface, borderColor: t.cardBorder, transform: [{ scale }, { translateX: shakeX }] }]}>
-          <Animated.Text style={[styles.emoji, { transform: [{ scale: emojiScale }] }]}>{resultEmoji}</Animated.Text>
+          <Animated.Text style={[styles.emoji, { transform: [{ scale: emojiScale }, { rotate: emojiRot }] }]}>{resultEmoji}</Animated.Text>
           {isDaily && <Text style={[styles.dailyBadge, { color: t.gold }]}>{'\uD83C\uDFC6'} DAILY CHALLENGE</Text>}
           <Text style={[styles.title, { color }]}>{title}</Text>
           <Text style={[styles.sub, { color: closeLossMsg ? t.accent : t.textSec }]}>{displaySubtitle}</Text>
@@ -212,7 +219,7 @@ export default function GameOverModal({
           )}
 
           {xpGain && (
-            <View style={[styles.xpPill, { backgroundColor: t.gold + '20' }]}>
+            <View style={[styles.xpPill, { backgroundColor: t.gold + '18', borderColor: t.gold + '35' }]}>
               <Text style={[styles.xpText, { color: t.gold }]}>
                 +{xpGain.total} XP
                 {xpGain.streakBonus > 0 ? ` (streak +${xpGain.streakBonus})` : ''}
@@ -223,26 +230,36 @@ export default function GameOverModal({
 
           <Text style={[styles.shareLabel, { color: t.textSec }]}>Challenge a friend</Text>
           <View style={styles.socialRow}>
-            <Pressable onPress={handleShare} style={[styles.socialBtn, { backgroundColor: t.surfaceAlt }]} accessibilityRole="button" accessibilityLabel="Share result">
+            <Pressable onPress={handleShare} style={[styles.socialBtn, { backgroundColor: t.surfaceAlt, borderColor: t.cardBorder }]} accessibilityRole="button" accessibilityLabel="Share result">
               <Text style={styles.socialIcon}>{'\uD83D\uDD17'}</Text>
               <Text style={[styles.socialText, { color: t.text }]}>Share</Text>
             </Pressable>
-            <Pressable onPress={handleWhatsApp} style={[styles.socialBtn, { backgroundColor: '#25D366' }]} accessibilityRole="button" accessibilityLabel="Share on WhatsApp">
+            <Pressable onPress={handleWhatsApp} style={[styles.socialBtn, { backgroundColor: '#25D366' + '18', borderColor: '#25D366' + '40' }]} accessibilityRole="button" accessibilityLabel="Share on WhatsApp">
               <Text style={styles.socialIcon}>{'\uD83D\uDCAC'}</Text>
-              <Text style={[styles.socialText, { color: '#fff' }]}>WhatsApp</Text>
+              <Text style={[styles.socialText, { color: '#1DAA5A' }]}>WhatsApp</Text>
             </Pressable>
-            <Pressable onPress={handleTwitter} style={[styles.socialBtn, { backgroundColor: '#1DA1F2' }]} accessibilityRole="button" accessibilityLabel="Share on Twitter">
+            <Pressable onPress={handleTwitter} style={[styles.socialBtn, { backgroundColor: '#1DA1F2' + '18', borderColor: '#1DA1F2' + '40' }]} accessibilityRole="button" accessibilityLabel="Share on Twitter">
               <Text style={styles.socialIcon}>{'\uD83D\uDC26'}</Text>
-              <Text style={[styles.socialText, { color: '#fff' }]}>Twitter</Text>
+              <Text style={[styles.socialText, { color: '#1A8CD8' }]}>Twitter</Text>
             </Pressable>
           </View>
 
           <View style={styles.btns}>
-            <Pressable onPress={onPlayAgain} style={[styles.btn, { backgroundColor: t.accent }]} accessibilityRole="button" accessibilityLabel={isDaily ? 'Go home' : 'Play again'}>
-              <Text style={[styles.btnTxt, { color: '#fff' }]}>{isDaily ? 'Home' : (closeLossMsg ? 'Try Again!' : 'Play Again')}</Text>
+            <Pressable
+              onPress={onPlayAgain}
+              style={({ pressed }) => [styles.btn, styles.primaryBtn, { backgroundColor: t.accent, transform: [{ scale: pressed ? 0.96 : 1 }] }]}
+              accessibilityRole="button"
+              accessibilityLabel={isDaily ? 'Go home' : 'Play again'}
+            >
+              <Text style={[styles.btnTxt, { color: '#fff' }]}>{isDaily ? 'Home' : (closeLossMsg ? '\uD83D\uDCAA Try Again!' : '\u25B6 Play Again')}</Text>
             </Pressable>
             {!isDaily && (
-              <Pressable onPress={onHome} style={[styles.btn, { backgroundColor: t.surfaceAlt }]} accessibilityRole="button" accessibilityLabel="Go to home screen">
+              <Pressable
+                onPress={onHome}
+                style={({ pressed }) => [styles.btn, { backgroundColor: t.surfaceAlt, borderColor: t.cardBorder, borderWidth: 2, borderStyle: 'dashed' as any, transform: [{ scale: pressed ? 0.96 : 1 }] }]}
+                accessibilityRole="button"
+                accessibilityLabel="Go to home screen"
+              >
                 <Text style={[styles.btnTxt, { color: t.textSec }]}>Home</Text>
               </Pressable>
             )}
@@ -255,20 +272,21 @@ export default function GameOverModal({
 
 const styles = StyleSheet.create({
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: 100 },
-  card: { borderRadius: 28, padding: 30, alignItems: 'center', width: '85%', borderWidth: 1, elevation: 12, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 24, shadowOffset: { width: 0, height: 10 } },
-  emoji: { fontSize: 56, marginBottom: 10 },
+  card: { borderRadius: 32, padding: 30, alignItems: 'center', width: '85%', borderWidth: 3, borderStyle: 'dashed' as any },
+  emoji: { fontSize: 60, marginBottom: 10 },
   dailyBadge: { fontSize: 13, fontWeight: '900', letterSpacing: 2, marginBottom: 8 },
-  title: { fontSize: 30, fontWeight: '900', marginBottom: 4, letterSpacing: 0.5 },
+  title: { fontSize: 28, fontWeight: '900', marginBottom: 4, letterSpacing: 0.5 },
   sub: { fontSize: 17, fontWeight: '600', marginBottom: 14 },
   starRow: { marginBottom: 12 },
-  xpPill: { paddingVertical: 8, paddingHorizontal: 20, borderRadius: 20, marginBottom: 18 },
+  xpPill: { paddingVertical: 8, paddingHorizontal: 20, borderRadius: 16, marginBottom: 18, borderWidth: 1.5 },
   xpText: { fontSize: 14, fontWeight: '800' },
   shareLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 2, marginBottom: 10, textTransform: 'uppercase' },
   socialRow: { flexDirection: 'row', gap: 8, marginBottom: 22 },
-  socialBtn: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 14, gap: 6, elevation: 2, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
-  socialIcon: { fontSize: 16 },
+  socialBtn: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 16, gap: 5, borderWidth: 1.5 },
+  socialIcon: { fontSize: 15 },
   socialText: { fontSize: 12, fontWeight: '700' },
   btns: { width: '100%', gap: 10 },
-  btn: { paddingVertical: 16, borderRadius: 16, alignItems: 'center', elevation: 3, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
+  btn: { paddingVertical: 16, borderRadius: 20, alignItems: 'center' },
+  primaryBtn: {},
   btnTxt: { fontSize: 16, fontWeight: '800', letterSpacing: 0.5 },
 });

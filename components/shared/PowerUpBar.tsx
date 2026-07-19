@@ -27,14 +27,11 @@ export default function PowerUpBar({ available, inventory, onUse, disabled }: Pr
             disabled={!canUse}
             accessibilityRole="button"
             accessibilityLabel={`${pu.name}: ${count} remaining`}
-            style={[
-              styles.btn,
-              {
-                backgroundColor: canUse ? t.gold + '20' : t.surfaceAlt,
-                borderColor: canUse ? t.gold : t.cardBorder,
-                opacity: canUse ? 1 : 0.4,
-              },
-            ]}
+            style={[styles.btn, {
+              backgroundColor: canUse ? t.gold + '15' : t.surfaceAlt,
+              borderColor: canUse ? t.gold + '40' : t.cardBorder,
+              opacity: canUse ? 1 : 0.4,
+            }]}
           >
             <Text style={styles.icon}>{pu.icon}</Text>
             <Text style={[styles.label, { color: t.text }]}>{pu.name}</Text>
@@ -50,9 +47,9 @@ export default function PowerUpBar({ available, inventory, onUse, disabled }: Pr
 
 const styles = StyleSheet.create({
   container: { flexDirection: 'row', justifyContent: 'center', gap: 8, paddingHorizontal: 12, marginBottom: 8 },
-  btn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 12, borderWidth: 1.5 },
+  btn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 7, paddingHorizontal: 12, borderRadius: 14, borderWidth: 2, borderStyle: 'dashed' as any },
   icon: { fontSize: 16 },
   label: { fontSize: 11, fontWeight: '700' },
-  badge: { width: 18, height: 18, borderRadius: 9, justifyContent: 'center', alignItems: 'center', marginLeft: 2 },
+  badge: { width: 20, height: 20, borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 2 },
   badgeText: { color: '#fff', fontSize: 10, fontWeight: '900' },
 });

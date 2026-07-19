@@ -17,7 +17,7 @@ export default function Board({ state, onPickColor, disabled }: Props) {
 
   return (
     <View style={{ alignSelf: 'center' }}>
-      <View style={[styles.grid, { width: bw, height: bw, borderRadius: 12, overflow: 'hidden', borderWidth: 2, borderColor: t.cardBorder }]}>
+      <View style={[styles.grid, { width: bw, height: bw, borderRadius: 18, overflow: 'hidden', borderWidth: 2, borderColor: t.cardBorder, borderStyle: 'dashed' as any }]}>
         {state.board.map((c, i) => (
           <View key={i} style={{ width: cell, height: cell, backgroundColor: FLOOD_COLORS[c] }} />
         ))}
@@ -32,8 +32,9 @@ export default function Board({ state, onPickColor, disabled }: Props) {
             style={[styles.colorBtn, {
               backgroundColor: color,
               opacity: i === state.board[0] ? 0.3 : 1,
-              borderColor: i === state.board[0] ? t.text : 'transparent',
-              borderWidth: i === state.board[0] ? 2 : 0,
+              borderColor: i === state.board[0] ? t.text : color + '60',
+              borderWidth: 2,
+              borderStyle: i === state.board[0] ? ('dashed' as any) : 'solid',
             }]}
           />
         ))}
@@ -45,5 +46,5 @@ export default function Board({ state, onPickColor, disabled }: Props) {
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   palette: { flexDirection: 'row', justifyContent: 'center', gap: 12, marginTop: 20, paddingHorizontal: 8 },
-  colorBtn: { width: 44, height: 44, borderRadius: 22, elevation: 2, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
+  colorBtn: { width: 44, height: 44, borderRadius: 22 },
 });

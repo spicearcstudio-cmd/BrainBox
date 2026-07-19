@@ -63,14 +63,19 @@ export default function SettingsScreen({ onBack }: Props) {
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: t.bg }]}>
       <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? 44 : 8 }]}>
-        <Pressable onPress={onBack}><Text style={[styles.back, { color: t.textSec }]}>{'\u2190'} Back</Text></Pressable>
-        <Text style={[styles.title, { color: t.text }]}>Settings</Text>
-        <View style={{ width: 50 }} />
+        <Pressable onPress={onBack} style={[styles.backBtn, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+          <Text style={[styles.backText, { color: t.text }]}>{'\u2190'}</Text>
+        </Pressable>
+        <View style={[styles.titlePill, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
+          <Text style={[styles.title, { color: t.text }]}>{'\u2699\uFE0F'} Settings</Text>
+        </View>
+        <View style={{ width: 42 }} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {!isPremium && (
-          <View style={[styles.premCard, { backgroundColor: t.surface, borderColor: t.gold }]}>
+          <View style={[styles.premCard, { backgroundColor: t.gold + '0D', borderColor: t.gold + '40' }]}>
+            <Text style={{ fontSize: 28, marginBottom: 8 }}>{'\u2B50'}</Text>
             <Text style={[styles.premTitle, { color: t.gold }]}>Go Premium</Text>
             <Text style={[styles.premDesc, { color: t.textSec }]}>
               Remove ads {'\u2022'} Play offline {'\u2022'} Exclusive themes
@@ -82,32 +87,32 @@ export default function SettingsScreen({ onBack }: Props) {
           </View>
         )}
 
-        <Text style={[styles.sectionLabel, { color: t.textSec }]}>SOUND & FEEDBACK</Text>
+        <Text style={[styles.sectionLabel, { color: t.textSec }]}>{'\uD83D\uDD0A'} SOUND & FEEDBACK</Text>
         <View style={[styles.toggleCard, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
           <View style={styles.toggleRow}>
-            <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDD0A'} Sound Effects</Text>
+            <Text style={[styles.toggleLabel, { color: t.text }]}>Sound Effects</Text>
             <Switch value={sound} onValueChange={toggleSound} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
           </View>
           <View style={[styles.divider, { backgroundColor: t.cardBorder }]} />
           <View style={styles.toggleRow}>
-            <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDCF3'} Haptic Feedback</Text>
+            <Text style={[styles.toggleLabel, { color: t.text }]}>Haptic Feedback</Text>
             <Switch value={haptic} onValueChange={toggleHaptic} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
           </View>
           <View style={[styles.divider, { backgroundColor: t.cardBorder }]} />
           <View style={styles.toggleRow}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDD14'} Notifications</Text>
+              <Text style={[styles.toggleLabel, { color: t.text }]}>Notifications</Text>
               <Text style={[styles.toggleHint, { color: t.textSec }]}>Daily challenge & streak reminders</Text>
             </View>
             <Switch value={notif} onValueChange={toggleNotif} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
           </View>
         </View>
 
-        <Text style={[styles.sectionLabel, { color: t.textSec }]}>PARENTAL CONTROLS</Text>
+        <Text style={[styles.sectionLabel, { color: t.textSec }]}>{'\uD83D\uDD12'} PARENTAL CONTROLS</Text>
         <View style={[styles.toggleCard, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
           <View style={styles.toggleRow}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.toggleLabel, { color: t.text }]}>{'\uD83D\uDD12'} Daily Game Limit</Text>
+              <Text style={[styles.toggleLabel, { color: t.text }]}>Daily Game Limit</Text>
               <Text style={[styles.toggleHint, { color: t.textSec }]}>Restrict games per day</Text>
             </View>
             <Switch value={parental?.enabled ?? false} onValueChange={toggleParental} trackColor={{ true: t.accent, false: t.surfaceAlt }} />
@@ -138,7 +143,7 @@ export default function SettingsScreen({ onBack }: Props) {
           )}
         </View>
 
-        <Text style={[styles.sectionLabel, { color: t.textSec }]}>THEME</Text>
+        <Text style={[styles.sectionLabel, { color: t.textSec }]}>{'\uD83C\uDFA8'} THEME</Text>
         <View style={styles.themeRow}>
           {ALL_THEMES.map(th => {
             const locked = th.premium && !isPremium;
@@ -149,8 +154,8 @@ export default function SettingsScreen({ onBack }: Props) {
                 onPress={() => setThemeId(th.id)}
                 style={[styles.themeBtn, {
                   backgroundColor: th.bg,
-                  borderColor: themeId === th.id ? th.player : th.cardBorder,
-                  borderWidth: themeId === th.id ? 3 : 1.5,
+                  borderColor: themeId === th.id ? th.accent : th.cardBorder,
+                  borderWidth: themeId === th.id ? 3 : 2,
                   opacity: locked ? 0.4 : 1,
                 }]}
               >
@@ -169,7 +174,7 @@ export default function SettingsScreen({ onBack }: Props) {
               style={[styles.seasonalCard, {
                 backgroundColor: seasonalTheme.bg,
                 borderColor: themeId === seasonalTheme.id ? seasonalTheme.accent : seasonalTheme.cardBorder,
-                borderWidth: themeId === seasonalTheme.id ? 3 : 1.5,
+                borderWidth: themeId === seasonalTheme.id ? 3 : 2,
               }]}
             >
               <Text style={[styles.seasonalName, { color: seasonalTheme.text }]}>{'\uD83C\uDF89'} {seasonalTheme.name}</Text>
@@ -189,8 +194,8 @@ export default function SettingsScreen({ onBack }: Props) {
         )}
 
         {isPremium && (
-          <View style={[styles.statusCard, { backgroundColor: t.surface, borderColor: t.accent }]}>
-            <Text style={[styles.statusTitle, { color: t.accent }]}>Premium Active</Text>
+          <View style={[styles.statusCard, { backgroundColor: t.accent + '0D', borderColor: t.accent + '40' }]}>
+            <Text style={[styles.statusTitle, { color: t.accent }]}>{'\u2728'} Premium Active</Text>
             <Text style={[styles.statusDesc, { color: t.textSec }]}>No ads {'\u2022'} Offline play {'\u2022'} All themes</Text>
           </View>
         )}
@@ -204,39 +209,41 @@ export default function SettingsScreen({ onBack }: Props) {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 12 },
-  back: { fontSize: 16, width: 50 },
-  title: { fontSize: 20, fontWeight: '800' },
+  backBtn: { width: 42, height: 42, borderRadius: 21, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderStyle: 'dashed' as any },
+  backText: { fontSize: 20, fontWeight: '700' },
+  titlePill: { paddingVertical: 6, paddingHorizontal: 18, borderRadius: 16, borderWidth: 2, borderStyle: 'dashed' as any },
+  title: { fontSize: 18, fontWeight: '800' },
   content: { flex: 1, paddingHorizontal: 24 },
-  premCard: { borderRadius: 20, padding: 24, alignItems: 'center', borderWidth: 2, marginBottom: 28 },
+  premCard: { borderRadius: 24, padding: 24, alignItems: 'center', borderWidth: 2, borderStyle: 'dashed' as any, marginBottom: 28 },
   premTitle: { fontSize: 22, fontWeight: '900', marginBottom: 6 },
   premDesc: { fontSize: 13, marginBottom: 18, textAlign: 'center' },
-  premBtn: { paddingVertical: 14, paddingHorizontal: 40, borderRadius: 14 },
+  premBtn: { paddingVertical: 14, paddingHorizontal: 40, borderRadius: 18 },
   premBtnText: { fontSize: 16, fontWeight: '800', color: '#fff' },
   restoreText: { fontSize: 13, marginTop: 12, textDecorationLine: 'underline' },
   sectionLabel: { fontSize: 11, fontWeight: '800', letterSpacing: 3, marginBottom: 12 },
-  toggleCard: { borderRadius: 16, borderWidth: 1.5, marginBottom: 24, overflow: 'hidden' },
+  toggleCard: { borderRadius: 20, borderWidth: 2, borderStyle: 'dashed' as any, marginBottom: 24, overflow: 'hidden' },
   toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14 },
   toggleLabel: { fontSize: 15, fontWeight: '600' },
   toggleHint: { fontSize: 12, marginTop: 2 },
-  divider: { height: 1 },
+  divider: { height: 1, marginHorizontal: 12 },
   limitSection: { paddingHorizontal: 16, paddingVertical: 14 },
   limitLabel: { fontSize: 14, fontWeight: '600', marginBottom: 10 },
   limitRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
-  limitInput: { flex: 1, borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontSize: 18, fontWeight: '700', textAlign: 'center' },
-  limitBtn: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 12 },
+  limitInput: { flex: 1, borderWidth: 2, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10, fontSize: 18, fontWeight: '700', textAlign: 'center', borderStyle: 'dashed' as any },
+  limitBtn: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 14 },
   limitBtnText: { color: '#fff', fontSize: 14, fontWeight: '800' },
   limitNote: { fontSize: 12, marginTop: 10, lineHeight: 18 },
   themeRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap', marginBottom: 24 },
-  themeBtn: { paddingVertical: 16, paddingHorizontal: 20, borderRadius: 16, alignItems: 'center', minWidth: 80 },
+  themeBtn: { paddingVertical: 16, paddingHorizontal: 20, borderRadius: 18, alignItems: 'center', minWidth: 80, borderStyle: 'dashed' as any },
   themeName: { fontSize: 14, fontWeight: '700' },
   lockIcon: { fontSize: 12, marginTop: 4 },
-  statusCard: { borderRadius: 16, padding: 18, alignItems: 'center', borderWidth: 2 },
+  statusCard: { borderRadius: 20, padding: 18, alignItems: 'center', borderWidth: 2, borderStyle: 'dashed' as any },
   statusTitle: { fontSize: 16, fontWeight: '800' },
   statusDesc: { fontSize: 12, marginTop: 4 },
-  seasonalCard: { borderRadius: 16, padding: 18, alignItems: 'center', marginBottom: 24 },
+  seasonalCard: { borderRadius: 20, padding: 18, alignItems: 'center', marginBottom: 24, borderStyle: 'dashed' as any },
   seasonalName: { fontSize: 18, fontWeight: '800' },
   seasonalDesc: { fontSize: 12, fontWeight: '500', marginTop: 4 },
-  seasonalLocked: { borderRadius: 16, padding: 18, alignItems: 'center', borderWidth: 1, marginBottom: 24 },
+  seasonalLocked: { borderRadius: 20, padding: 18, alignItems: 'center', borderWidth: 2, marginBottom: 24, borderStyle: 'dashed' as any },
   seasonalLockedEmoji: { fontSize: 24, marginBottom: 6 },
   seasonalLockedText: { fontSize: 13, fontWeight: '500' },
 });

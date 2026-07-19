@@ -76,13 +76,13 @@ export default function AvatarPickerScreen({ onBack }: Props) {
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: { padding: 20, alignItems: 'center' },
-  preview: { alignItems: 'center', padding: 24, borderRadius: 20, borderWidth: 1.5, width: '100%', marginBottom: 24 },
+  preview: { alignItems: 'center', padding: 24, borderRadius: 24, borderWidth: 2, borderStyle: 'dashed' as any, width: '100%', marginBottom: 24 },
   previewEmoji: { fontSize: 64, marginBottom: 12 },
-  nameInput: { fontSize: 20, fontWeight: '800', textAlign: 'center', borderBottomWidth: 2, paddingBottom: 6, minWidth: 180 },
+  nameInput: { fontSize: 20, fontWeight: '800', textAlign: 'center', borderBottomWidth: 2, borderStyle: 'dashed' as any, paddingBottom: 6, minWidth: 180 },
   sectionTitle: { fontSize: 12, fontWeight: '800', letterSpacing: 3, marginBottom: 16, alignSelf: 'flex-start' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginBottom: 30 },
-  avatarBtn: { width: 56, height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center', borderWidth: 2 },
+  avatarBtn: { width: 56, height: 56, borderRadius: 28, justifyContent: 'center', alignItems: 'center', borderWidth: 2, borderStyle: 'dashed' as any },
   avatarEmoji: { fontSize: 28 },
-  saveBtn: { paddingVertical: 14, paddingHorizontal: 60, borderRadius: 16 },
+  saveBtn: { paddingVertical: 16, paddingHorizontal: 60, borderRadius: 22 },
   saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
 });

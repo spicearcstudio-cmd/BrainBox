@@ -41,7 +41,7 @@ const svg = `<svg width="${WIDTH}" height="${HEIGHT}" xmlns="http://www.w3.org/2
 
   <!-- App name -->
   <text x="512" y="270" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="900"
-        fill="#FFFFFF" text-anchor="middle" letter-spacing="4" filter="url(#shadow)">Brain Box</text>
+        fill="#FFFFFF" text-anchor="middle" letter-spacing="6" filter="url(#shadow)">Brainio</text>
 
   <!-- Tagline -->
   <text x="512" y="320" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="600"

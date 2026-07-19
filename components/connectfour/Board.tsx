@@ -15,8 +15,11 @@ export default function Board({ state, onDrop, disabled }: Props) {
   const bw = Math.min(width - 32, 420);
   const cell = bw / state.cols;
 
+  const isDark = t.statusBar === 'light';
+  const boardBg = isDark ? '#2E2520' : t.player + '15';
+
   return (
-    <View style={[styles.board, { width: bw, backgroundColor: t.player + '20', borderColor: t.cardBorder, alignSelf: 'center' }]}>
+    <View style={[styles.board, { width: bw, backgroundColor: boardBg, borderColor: t.player + '30', alignSelf: 'center' }]}>
       {Array.from({ length: state.cols }, (_, c) => (
         <Pressable key={c} disabled={disabled || !!state.board[c]} onPress={() => onDrop(c)} style={{ width: cell }}>
           {Array.from({ length: state.rows }, (_, r) => {
@@ -27,8 +30,9 @@ export default function Board({ state, onDrop, disabled }: Props) {
                 <View style={[styles.disc, {
                   width: cell * 0.78, height: cell * 0.78,
                   backgroundColor: v === 'human' ? t.player : v === 'ai' ? t.ai : t.surface,
-                  borderColor: isLast ? t.gold : 'transparent',
-                  borderWidth: isLast ? 3 : 0,
+                  borderColor: isLast ? t.gold : (v ? t.cardBorder : t.cardBorder + '60'),
+                  borderWidth: isLast ? 3 : 2,
+                  borderStyle: v ? 'solid' : ('dashed' as any),
                 }]} />
               </View>
             );
@@ -40,7 +44,7 @@ export default function Board({ state, onDrop, disabled }: Props) {
 }
 
 const styles = StyleSheet.create({
-  board: { flexDirection: 'row', borderRadius: 18, borderWidth: 2, padding: 6, overflow: 'hidden', elevation: 6, shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 12, shadowOffset: { width: 0, height: 4 } },
+  board: { flexDirection: 'row', borderRadius: 20, borderWidth: 2, padding: 6, overflow: 'hidden', borderStyle: 'dashed' as any },
   slot: { justifyContent: 'center', alignItems: 'center' },
-  disc: { borderRadius: 999, elevation: 3, shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
+  disc: { borderRadius: 999 },
 });

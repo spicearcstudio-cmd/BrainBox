@@ -26,7 +26,7 @@ export const GAMES: GameInfo[] = [
     id: 'dotsandboxes',
     name: 'Dots & Boxes',
     icon: '\u25A6',
-    color: '#5C6BC0',
+    color: '#E8734A',
     description: 'Connect dots to claim boxes',
     vsAI: true,
     difficulties: [
@@ -40,7 +40,7 @@ export const GAMES: GameInfo[] = [
     id: 'tictactoe',
     name: 'Tic Tac Toe',
     icon: '\u2716',
-    color: '#EF5350',
+    color: '#D4605A',
     description: 'Get your marks in a row',
     vsAI: true,
     difficulties: [
@@ -53,7 +53,7 @@ export const GAMES: GameInfo[] = [
     id: 'connectfour',
     name: 'Connect Four',
     icon: '\u25CF',
-    color: '#FDD835',
+    color: '#E8B44A',
     description: 'Drop discs, connect four',
     vsAI: true,
     difficulties: [
@@ -66,7 +66,7 @@ export const GAMES: GameInfo[] = [
     id: 'memory',
     name: 'Memory Match',
     icon: '\u2663',
-    color: '#AB47BC',
+    color: '#B07AAD',
     description: 'Flip cards, find all pairs',
     vsAI: false,
     difficulties: [
@@ -79,7 +79,7 @@ export const GAMES: GameInfo[] = [
     id: 'colorflood',
     name: 'Color Flood',
     icon: '\u25D0',
-    color: '#26A69A',
+    color: '#5DAD9E',
     description: 'Flood the board in fewest moves',
     vsAI: false,
     difficulties: [
@@ -92,7 +92,7 @@ export const GAMES: GameInfo[] = [
     id: 'reversi',
     name: 'Reversi',
     icon: '\u25D1',
-    color: '#43A047',
+    color: '#5B9E5F',
     description: 'Flip & dominate the board',
     vsAI: true,
     unlockLevel: 25,
@@ -106,7 +106,7 @@ export const GAMES: GameInfo[] = [
     id: 'twenty48',
     name: '2048',
     icon: '\u00B2',
-    color: '#FF7043',
+    color: '#D4785A',
     description: 'Slide, merge, reach 2048!',
     vsAI: false,
     unlockLevel: 50,

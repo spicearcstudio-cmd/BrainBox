@@ -71,8 +71,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute', top: 50, left: 20, right: 20,
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    paddingVertical: 14, paddingHorizontal: 18, borderRadius: 16,
-    elevation: 10, shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 12, shadowOffset: { width: 0, height: 4 },
+    paddingVertical: 16, paddingHorizontal: 18, borderRadius: 22,
     zIndex: 500,
   },
   icon: { fontSize: 28 },

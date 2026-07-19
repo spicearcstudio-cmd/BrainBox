@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Animated, StyleSheet, Dimensions, Easing } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -12,12 +12,18 @@ export default function SplashOverlay({ onDone }: Props) {
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const subtitleOpacity = useRef(new Animated.Value(0)).current;
   const containerOpacity = useRef(new Animated.Value(1)).current;
+  const logoRotate = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.sequence([
       Animated.parallel([
-        Animated.spring(logoScale, { toValue: 1, tension: 60, friction: 7, useNativeDriver: true }),
+        Animated.spring(logoScale, { toValue: 1, tension: 50, friction: 5, useNativeDriver: true }),
         Animated.timing(logoOpacity, { toValue: 1, duration: 400, useNativeDriver: true }),
+        Animated.sequence([
+          Animated.timing(logoRotate, { toValue: 1, duration: 150, useNativeDriver: true }),
+          Animated.timing(logoRotate, { toValue: -0.5, duration: 120, useNativeDriver: true }),
+          Animated.timing(logoRotate, { toValue: 0, duration: 100, useNativeDriver: true }),
+        ]),
       ]),
       Animated.timing(subtitleOpacity, { toValue: 1, duration: 300, useNativeDriver: true }),
       Animated.delay(800),
@@ -25,14 +31,16 @@ export default function SplashOverlay({ onDone }: Props) {
     ]).start(onDone);
   }, []);
 
+  const rotate = logoRotate.interpolate({ inputRange: [-1, 0, 1], outputRange: ['-10deg', '0deg', '10deg'] });
+
   return (
     <Animated.View style={[styles.container, { opacity: containerOpacity }]}>
-      <Animated.View style={{ transform: [{ scale: logoScale }], opacity: logoOpacity }}>
+      <Animated.View style={{ transform: [{ scale: logoScale }, { rotate }], opacity: logoOpacity }}>
         <Text style={styles.icon}>{'\uD83E\uDDE0'}</Text>
         <Text style={styles.title}>Brainio</Text>
       </Animated.View>
       <Animated.Text style={[styles.subtitle, { opacity: subtitleOpacity }]}>
-        Classic Strategy Games
+        {'\u2728'} Train your brain, have fun! {'\u2728'}
       </Animated.Text>
       <View style={styles.dots}>
         {[0, 1, 2].map(i => (
@@ -46,11 +54,11 @@ export default function SplashOverlay({ onDone }: Props) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute', top: 0, left: 0, width, height,
-    backgroundColor: '#EDE7F6', justifyContent: 'center', alignItems: 'center', zIndex: 9999,
+    backgroundColor: '#FFF5EC', justifyContent: 'center', alignItems: 'center', zIndex: 9999,
   },
-  icon: { fontSize: 72, textAlign: 'center', marginBottom: 8 },
-  title: { fontSize: 42, fontWeight: '900', color: '#5C6BC0', letterSpacing: 2, textAlign: 'center' },
-  subtitle: { fontSize: 16, fontWeight: '600', color: '#9575CD', marginTop: 8, letterSpacing: 3 },
-  dots: { flexDirection: 'row', gap: 8, position: 'absolute', bottom: 80 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#5C6BC0' },
+  icon: { fontSize: 80, textAlign: 'center', marginBottom: 8 },
+  title: { fontSize: 44, fontWeight: '900', color: '#E8734A', letterSpacing: 2, textAlign: 'center' },
+  subtitle: { fontSize: 15, fontWeight: '600', color: '#9B8574', marginTop: 10, letterSpacing: 2 },
+  dots: { flexDirection: 'row', gap: 10, position: 'absolute', bottom: 80 },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#E8734A' },
 });
