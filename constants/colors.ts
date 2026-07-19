@@ -47,7 +47,7 @@ export const DEFAULT_THEME: AppTheme = {
 export const OCEAN_THEME: AppTheme = {
   id: 'ocean',
   name: 'Ocean',
-  premium: true,
+  premium: false,
   bg: '#EAF6F8',
   surface: '#F5FBFC',
   surfaceAlt: '#E0F2F1',
@@ -70,7 +70,7 @@ export const OCEAN_THEME: AppTheme = {
 export const SUNSET_THEME: AppTheme = {
   id: 'sunset',
   name: 'Sunset',
-  premium: true,
+  premium: false,
   bg: '#FFF0E6',
   surface: '#FFF8F2',
   surfaceAlt: '#FFEBDA',
@@ -93,7 +93,7 @@ export const SUNSET_THEME: AppTheme = {
 export const FOREST_THEME: AppTheme = {
   id: 'forest',
   name: 'Forest',
-  premium: true,
+  premium: false,
   bg: '#ECF3E8',
   surface: '#F6FAF4',
   surfaceAlt: '#E8F0E2',

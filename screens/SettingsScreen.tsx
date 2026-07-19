@@ -73,19 +73,6 @@ export default function SettingsScreen({ onBack }: Props) {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {!isPremium && (
-          <View style={[styles.premCard, { backgroundColor: t.gold + '0D', borderColor: t.gold + '40' }]}>
-            <Text style={{ fontSize: 28, marginBottom: 8 }}>{'\u2B50'}</Text>
-            <Text style={[styles.premTitle, { color: t.gold }]}>Go Premium</Text>
-            <Text style={[styles.premDesc, { color: t.textSec }]}>
-              Remove ads {'\u2022'} Play offline {'\u2022'} Exclusive themes
-            </Text>
-            <Pressable onPress={handlePurchase} style={[styles.premBtn, { backgroundColor: t.gold }]}>
-              <Text style={styles.premBtnText}>Unlock for $2.99</Text>
-            </Pressable>
-            <Pressable onPress={restore}><Text style={[styles.restoreText, { color: t.textSec }]}>Restore purchase</Text></Pressable>
-          </View>
-        )}
 
         <Text style={[styles.sectionLabel, { color: t.textSec }]}>{'\uD83D\uDD0A'} SOUND & FEEDBACK</Text>
         <View style={[styles.toggleCard, { backgroundColor: t.surface, borderColor: t.cardBorder }]}>
@@ -145,25 +132,19 @@ export default function SettingsScreen({ onBack }: Props) {
 
         <Text style={[styles.sectionLabel, { color: t.textSec }]}>{'\uD83C\uDFA8'} THEME</Text>
         <View style={styles.themeRow}>
-          {ALL_THEMES.map(th => {
-            const locked = th.premium && !isPremium;
-            return (
+          {ALL_THEMES.map(th => (
               <Pressable
                 key={th.id}
-                disabled={locked}
                 onPress={() => setThemeId(th.id)}
                 style={[styles.themeBtn, {
                   backgroundColor: th.bg,
                   borderColor: themeId === th.id ? th.accent : th.cardBorder,
                   borderWidth: themeId === th.id ? 3 : 2,
-                  opacity: locked ? 0.4 : 1,
                 }]}
               >
                 <Text style={[styles.themeName, { color: th.text }]}>{th.name}</Text>
-                {locked && <Text style={[styles.lockIcon, { color: th.textSec }]}>{'\uD83D\uDD12'}</Text>}
               </Pressable>
-            );
-          })}
+          ))}
         </View>
 
         {seasonalTheme && (
@@ -191,13 +172,6 @@ export default function SettingsScreen({ onBack }: Props) {
               <Text style={[styles.seasonalLockedText, { color: t.textSec }]}>Seasonal themes appear during holidays!</Text>
             </View>
           </>
-        )}
-
-        {isPremium && (
-          <View style={[styles.statusCard, { backgroundColor: t.accent + '0D', borderColor: t.accent + '40' }]}>
-            <Text style={[styles.statusTitle, { color: t.accent }]}>{'\u2728'} Premium Active</Text>
-            <Text style={[styles.statusDesc, { color: t.textSec }]}>No ads {'\u2022'} Offline play {'\u2022'} All themes</Text>
-          </View>
         )}
 
         <View style={{ height: 40 }} />

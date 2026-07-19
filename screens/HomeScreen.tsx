@@ -120,7 +120,6 @@ export default function HomeScreen({ onSelectGame, onSettings, onStats, onDaily,
         </Pressable>
         <Animated.View style={[styles.titleRow, { transform: [{ scale: titleScale }] }]}>
           <Text style={[styles.title, { color: t.text }]}>{'\uD83E\uDDE0'} Brainio</Text>
-          {isPremium && <View style={[styles.proBadge, { backgroundColor: t.gold }]}><Text style={styles.proText}>PRO</Text></View>}
         </Animated.View>
         <Pressable onPress={onSettings} style={[styles.settingsBtn, { backgroundColor: t.surface, borderColor: t.accent + '50' }]} accessibilityRole="button" accessibilityLabel="Settings">
           <Text style={{ fontSize: 18 }}>{'\u2699\uFE0F'}</Text>

@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "main": "expo/AppEntry",
   "dependencies": {
-    "@expo/metro-runtime": "~56.0.15",
+    "@expo/metro-runtime": "~56.0.17",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~56.0.12",
     "expo-asset": "~56.0.17",
@@ -16,7 +16,8 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.3",
-    "react-native-gesture-handler": "~2.31.1"
+    "react-native-gesture-handler": "~2.31.1",
+    "react-native-web": "^0.21.2"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
